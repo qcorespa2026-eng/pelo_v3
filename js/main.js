@@ -417,7 +417,9 @@
     navLinks.forEach(a => {
       const href = a.getAttribute('href') || '';
       // Get the page name from href
-      let hrefPage = href.split('/').pop().split('?')[0].split('#')[0].replace(/\.html$/, '') || 'index';
+      // Handle directory paths like "calculator/" — use the directory name, not empty string
+      const cleanHref = href.split('?')[0].split('#')[0].replace(/\/+$/, '');
+      let hrefPage = cleanHref.split('/').pop().replace(/\.html$/, '') || 'index';
       
       if (hrefPage === currentPage) {
         activeLink = a;
