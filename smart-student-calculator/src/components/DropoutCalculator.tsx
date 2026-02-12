@@ -83,6 +83,10 @@ const i18n: Record<Lang, Record<string, string>> = {
     chartAmount: 'Monto',
     ctaLabel: 'Acción inmediata',
     ctaText: 'La brecha crece cada año. Actúa ahora y protege tu matrícula.',
+    ctaRecovery1: 'Con solo retener',
+    ctaRecovery2: 'al año, la inversión se paga sola.',
+    ctaRecoveryStudent: 'alumno',
+    ctaRecoveryStudents: 'alumnos',
     ctaBtn: 'Detener Pérdida',
     year1: '1 Año',
     year3: '3 Años',
@@ -133,6 +137,10 @@ const i18n: Record<Lang, Record<string, string>> = {
     chartAmount: 'Amount',
     ctaLabel: 'Immediate Action',
     ctaText: 'The gap grows every year. Act now and protect your enrollment.',
+    ctaRecovery1: 'By retaining just',
+    ctaRecovery2: 'per year, the investment pays for itself.',
+    ctaRecoveryStudent: 'student',
+    ctaRecoveryStudents: 'students',
     ctaBtn: 'Stop Loss',
     year1: '1 Year',
     year3: '3 Years',
@@ -309,7 +317,10 @@ const DropoutCalculator: React.FC = () => {
     const projectedLoss = annualLoss * temporalidad;
     const projectedInvestment = smartStudentAnnualCost * temporalidad;
     const savings = projectedLoss - projectedInvestment;
-    return { studentsLost, annualLoss, smartStudentAnnualCost, projectedLoss, projectedInvestment, savings };
+    // How many students to recover to pay for the investment
+    const annualIncomePerStudent = monthlyIncome * 12;
+    const studentsToRecover = annualIncomePerStudent > 0 ? Math.ceil(smartStudentAnnualCost / annualIncomePerStudent) : 0;
+    return { studentsLost, annualLoss, smartStudentAnnualCost, projectedLoss, projectedInvestment, savings, studentsToRecover };
   }, [enrollment, sustainer, ive, temporalidad]);
 
   const animLost = useAnimatedNumber(results.studentsLost);
@@ -517,6 +528,13 @@ const DropoutCalculator: React.FC = () => {
             </Text>
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="700" lineHeight="1.3">
               {t('ctaText')}
+            </Text>
+            <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="500" lineHeight="1.4" opacity={0.95} mt={1}>
+              {t('ctaRecovery1')}{' '}
+              <Text as="span" fontWeight="900" fontSize={{ base: 'md', md: 'lg' }}>
+                {results.studentsToRecover} {results.studentsToRecover === 1 ? t('ctaRecoveryStudent') : t('ctaRecoveryStudents')}
+              </Text>
+              {' '}{t('ctaRecovery2')}
             </Text>
           </Box>
           <Button as="a" href="/index.html#demo" size="md" bg="white" color="gray.900" flexShrink={0}
