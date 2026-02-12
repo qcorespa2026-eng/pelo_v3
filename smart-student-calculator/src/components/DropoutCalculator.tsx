@@ -38,7 +38,13 @@ const DROPOUT_RATE = 0.028;
 const BASE_SUBSIDY = 120_000;
 const IVE_MULTIPLIERS: Record<string, number> = { BAJO: 1.0, MEDIO: 1.2, ALTO: 1.5 };
 const SOSTAINER_MULTIPLIERS: Record<string, number> = { MUNICIPAL: 1.0, SUBVENCIONADO: 1.1, PAGADO: 3.0 };
-const PRICE_PER_STUDENT = 2_500; // CLP por alumno al mes
+/* ---- Dynamic pricing (economies of scale) ---- */
+type PriceTier = 'BASE' | 'VOLUMEN' | 'CORPORATIVO';
+function getPrecioPorAlumno(matricula: number): { precio: number; tier: PriceTier } {
+  if (matricula > 1000) return { precio: 1_500, tier: 'CORPORATIVO' };
+  if (matricula > 400)  return { precio: 2_000, tier: 'VOLUMEN' };
+  return { precio: 2_500, tier: 'BASE' };
+}
 
 /* ---- i18n ---- */
 type Lang = 'es' | 'en';
@@ -88,6 +94,10 @@ const i18n: Record<Lang, Record<string, string>> = {
     ctaRecoveryStudent: 'alumno',
     ctaRecoveryStudents: 'alumnos',
     ctaBtn: 'Detener Pérdida',
+    tierBase: 'Precio Base',
+    tierVolumen: '¡Descuento por Volumen Aplicado!',
+    tierCorporativo: 'Tarifa Preferencial Corporativa',
+    pricePerStudent: 'por alumno/mes',
     year1: '1 Año',
     year3: '3 Años',
     year5: '5 Años',
@@ -142,6 +152,10 @@ const i18n: Record<Lang, Record<string, string>> = {
     ctaRecoveryStudent: 'student',
     ctaRecoveryStudents: 'students',
     ctaBtn: 'Stop Loss',
+    tierBase: 'Standard Price',
+    tierVolumen: 'Volume Discount Applied!',
+    tierCorporativo: 'Corporate Preferred Rate',
+    pricePerStudent: 'per student/month',
     year1: '1 Year',
     year3: '3 Years',
     year5: '5 Years',
@@ -311,8 +325,9 @@ const DropoutCalculator: React.FC = () => {
     const studentsLost = Math.ceil(enrollment * DROPOUT_RATE);
     const monthlyLoss = studentsLost * monthlyIncome;
     const annualLoss = monthlyLoss * 12;
-    // New SaaS pricing: $2.500 CLP × matrícula total × 12 meses
-    const smartStudentAnnualCost = enrollment * PRICE_PER_STUDENT * 12;
+    // Dynamic SaaS pricing with economies of scale
+    const { precio: pricePerStudent, tier: priceTier } = getPrecioPorAlumno(enrollment);
+    const smartStudentAnnualCost = enrollment * pricePerStudent * 12;
     // Projected values based on temporalidad
     const projectedLoss = annualLoss * temporalidad;
     const projectedInvestment = smartStudentAnnualCost * temporalidad;
@@ -320,7 +335,7 @@ const DropoutCalculator: React.FC = () => {
     // How many students to recover to pay for the investment
     const annualIncomePerStudent = monthlyIncome * 12;
     const studentsToRecover = annualIncomePerStudent > 0 ? Math.ceil(smartStudentAnnualCost / annualIncomePerStudent) : 0;
-    return { studentsLost, annualLoss, smartStudentAnnualCost, projectedLoss, projectedInvestment, savings, studentsToRecover };
+    return { studentsLost, annualLoss, smartStudentAnnualCost, projectedLoss, projectedInvestment, savings, studentsToRecover, priceTier, pricePerStudent };
   }, [enrollment, sustainer, ive, temporalidad]);
 
   const animLost = useAnimatedNumber(results.studentsLost);
@@ -386,6 +401,21 @@ const DropoutCalculator: React.FC = () => {
                 <Input type="number" value={enrollment} size="md" rounded="lg"
                   bg={dark ? 'gray.700' : 'white'} borderColor={cardBorder} color={textPrimary}
                   onChange={(e) => setEnrollment(Number(e.target.value))} min={1} />
+                {/* Dynamic pricing badge */}
+                <HStack mt={2} spacing={2} align="center">
+                  <Badge
+                    colorScheme={results.priceTier === 'CORPORATIVO' ? 'purple' : results.priceTier === 'VOLUMEN' ? 'green' : 'gray'}
+                    variant={results.priceTier === 'BASE' ? 'subtle' : 'solid'}
+                    fontSize="11px" px={2} py={0.5} borderRadius="full"
+                    transition="all 0.3s ease">
+                    {results.priceTier === 'CORPORATIVO' ? t('tierCorporativo')
+                      : results.priceTier === 'VOLUMEN' ? t('tierVolumen')
+                      : t('tierBase')}
+                  </Badge>
+                  <Text fontSize="11px" color={results.priceTier !== 'BASE' ? 'green.500' : textSecondary} fontWeight="600">
+                    {fmt(results.pricePerStudent)} {t('pricePerStudent')}
+                  </Text>
+                </HStack>
               </FormControl>
 
               <FormControl>
@@ -529,9 +559,9 @@ const DropoutCalculator: React.FC = () => {
             <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="700" lineHeight="1.3">
               {t('ctaText')}
             </Text>
-            <Text fontSize={{ base: 'sm', md: 'md' }} fontWeight="500" lineHeight="1.4" opacity={0.95} mt={1}>
+            <Text fontSize={{ base: '10px', md: '11px' }} fontWeight="500" lineHeight="1.3" opacity={0.8} mt={0.5}>
               {t('ctaRecovery1')}{' '}
-              <Text as="span" fontWeight="900" fontSize={{ base: 'md', md: 'lg' }}>
+              <Text as="span" fontWeight="800" fontSize={{ base: '10px', md: '11px' }}>
                 {results.studentsToRecover} {results.studentsToRecover === 1 ? t('ctaRecoveryStudent') : t('ctaRecoveryStudents')}
               </Text>
               {' '}{t('ctaRecovery2')}
