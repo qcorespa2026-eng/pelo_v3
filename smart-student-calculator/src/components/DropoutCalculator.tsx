@@ -136,15 +136,23 @@ const i18n: Record<Lang, Record<string, string>> = {
 
 /* ---- Theme hook ---- */
 function useThemeToggle() {
-  const [dark, setDark] = useState(false);
+  const [dark, setDark] = useState(() => {
+    // Read from localStorage so it matches the other pages
+    return localStorage.getItem('theme') === 'dark';
+  });
+
+  // Sync dark class on <html> and <body>, same as main.js applyTheme
   useEffect(() => {
-    document.body.setAttribute('data-theme', dark ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (dark) {
+      document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
+    }
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
   }, [dark]);
-  useEffect(() => {
-    document.body.setAttribute('data-theme', 'light');
-    document.documentElement.setAttribute('data-theme', 'light');
-  }, []);
+
   const toggle = useCallback(() => setDark((d) => !d), []);
 
   // Expose toggle to static navbar
@@ -153,35 +161,13 @@ function useThemeToggle() {
     if (root) (root as any).__themeToggle = toggle;
   }, [toggle]);
 
-  // Sync navbar icon with theme state
+  // Sync navbar icon (moon/sun) with theme state
   useEffect(() => {
     const icon = document.getElementById('navbar-theme-icon');
-    const navbar = document.getElementById('site-navbar');
-    const logo = document.getElementById('navbar-logo-text');
     if (icon) {
-      icon.className = dark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
-      icon.style.color = dark ? '#fbbf24' : '#475569';
-    }
-    if (navbar) {
-      navbar.style.background = dark ? 'rgba(15,23,42,0.92)' : 'rgba(255,255,255,0.85)';
-      navbar.style.borderColor = dark ? 'rgba(51,65,85,0.6)' : 'rgba(203,213,225,0.4)';
-    }
-    // Update nav link colors
-    ['nav-inicio','nav-features','nav-roles','nav-plans'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.style.color = dark ? '#94a3b8' : '#475569';
-    });
-    if (logo) logo.style.color = dark ? '#e2e8f0' : '#0f172a';
-    const themeBtn = document.getElementById('navbar-theme-toggle');
-    if (themeBtn) {
-      themeBtn.style.background = dark ? 'rgba(51,65,85,0.8)' : 'rgba(255,255,255,0.8)';
-      themeBtn.style.borderColor = dark ? '#475569' : '#e2e8f0';
-    }
-    const langBtn = document.getElementById('navbar-lang-toggle');
-    if (langBtn) {
-      langBtn.style.background = dark ? '#334155' : 'white';
-      langBtn.style.color = dark ? '#e2e8f0' : '#0f172a';
-      langBtn.style.borderColor = dark ? '#475569' : '#e2e8f0';
+      icon.className = dark
+        ? 'fa-solid fa-sun text-sm text-yellow-300'
+        : 'fa-solid fa-moon text-sm text-slate-700 dark:text-yellow-300';
     }
   }, [dark]);
 
@@ -221,16 +207,17 @@ const MiniCard: React.FC<{
   dark: boolean;
 }> = ({ icon, iconColor, label, value, sub, dark }) => (
   <Box bg={dark ? 'gray.800' : 'white'} border="1px solid" borderColor={dark ? 'gray.700' : 'gray.200'}
-    rounded="xl" px={3} py={2} boxShadow={dark ? '0 4px 14px -6px rgba(0,0,0,0.4)' : '0 4px 14px -6px rgba(15,23,42,0.12)'}
-    transition="background 0.3s, border-color 0.3s">
-    <HStack spacing={1.5} mb={0.5}>
-      <Icon as={icon} boxSize="12px" color={iconColor} />
-      <Text fontSize="10px" color={dark ? 'gray.400' : 'gray.500'} textTransform="uppercase" fontWeight="600" letterSpacing="0.04em">
+    rounded="2xl" px={4} py={3} boxShadow={dark ? '0 4px 14px -6px rgba(0,0,0,0.4)' : '0 4px 14px -6px rgba(15,23,42,0.12)'}
+    transition="all 0.3s ease" cursor="pointer"
+    _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 8px 24px -6px rgba(0,0,0,0.5)' : '0 8px 24px -6px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
+    <HStack spacing={2} mb={1}>
+      <Icon as={icon} boxSize="14px" color={iconColor} />
+      <Text fontSize="11px" color={dark ? 'gray.400' : 'gray.500'} textTransform="uppercase" fontWeight="600" letterSpacing="0.04em">
         {label}
       </Text>
     </HStack>
-    <Text fontSize="md" fontWeight="800" lineHeight="1.2" color={dark ? 'gray.100' : 'gray.800'}>{value}</Text>
-    {sub && <Text fontSize="10px" color={dark ? 'gray.500' : 'gray.400'} mt={0}>{sub}</Text>}
+    <Text fontSize="lg" fontWeight="800" lineHeight="1.2" color={dark ? 'gray.100' : 'gray.800'}>{value}</Text>
+    {sub && <Text fontSize="12px" color={dark ? 'gray.500' : 'gray.400'} mt={0.5}>{sub}</Text>}
   </Box>
 );
 
@@ -241,11 +228,11 @@ const CompareBar: React.FC<{
   const pct = Math.min((value / maxValue) * 100, 100);
   return (
     <Box>
-      <HStack justify="space-between" mb={0.5}>
-        <Text fontSize="11px" color={dark ? 'gray.400' : 'gray.600'}>{label}</Text>
-        <Text fontSize="11px" fontWeight="700" color={dark ? 'gray.200' : undefined}>{format(value)}</Text>
+      <HStack justify="space-between" mb={1}>
+        <Text fontSize="12px" color={dark ? 'gray.400' : 'gray.600'}>{label}</Text>
+        <Text fontSize="12px" fontWeight="700" color={dark ? 'gray.200' : undefined}>{format(value)}</Text>
       </HStack>
-      <Box bg={dark ? 'gray.700' : 'gray.100'} rounded="full" h="6px" overflow="hidden">
+      <Box bg={dark ? 'gray.700' : 'gray.100'} rounded="full" h="7px" overflow="hidden">
         <Box h="full" rounded="full" bg={color} w={`${pct}%`} transition="width 0.6s ease" />
       </Box>
     </Box>
@@ -255,7 +242,7 @@ const CompareBar: React.FC<{
 /* ================ MAIN COMPONENT ================ */
 const DropoutCalculator: React.FC = () => {
   const { dark } = useThemeToggle();
-  const [lang, setLang] = useState<Lang>('es');
+  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('lang') === 'en' ? 'en' : 'es'));
   const t = useCallback((key: string) => i18n[lang][key] ?? key, [lang]);
   const [enrollment, setEnrollment] = useState<number>(800);
   const [sustainer, setSustainer] = useState<string>('SUBVENCIONADO');
@@ -263,6 +250,9 @@ const DropoutCalculator: React.FC = () => {
 
   // Expose lang toggle to static navbar
   const langToggle = useCallback(() => setLang((l) => (l === 'es' ? 'en' : 'es')), []);
+  useEffect(() => {
+    localStorage.setItem('lang', lang);
+  }, [lang]);
   useEffect(() => {
     const root = document.getElementById('root');
     if (root) (root as any).__langToggle = langToggle;
@@ -325,56 +315,57 @@ const DropoutCalculator: React.FC = () => {
 
   return (
     <Box display="flex" flexDirection="column"
-      pt={{ base: 4, md: 5 }} pb={0} px={{ base: 3, md: 5 }}
+      pt={{ base: 8, md: 12 }} pb={{ base: 8, md: 10 }} px={{ base: 4, md: 8 }}
       bg="transparent"
       color={dark ? '#e2e8f0' : '#0f172a'}
       transition="color 0.4s ease">
       <Box maxW="1280px" mx="auto" w="full">
         {/* ===== HEADER ===== */}
-        <HStack justify="space-between" mb={1} flexWrap="wrap" align="center">
-          <HStack spacing={2} flexWrap="wrap">
-            <Badge colorScheme="blue" variant="subtle" px={2} py={0.5} borderRadius="full" fontSize="10px"
+        <HStack justify="space-between" mb={3} flexWrap="wrap" align="center">
+          <HStack spacing={3} flexWrap="wrap">
+            <Badge colorScheme="blue" variant="subtle" px={3} py={1} borderRadius="full" fontSize="12px"
               letterSpacing="0.08em">
               {t('badge')}
             </Badge>
-            <Badge colorScheme="orange" variant="subtle" fontSize="10px">{t('badgeTasa')}</Badge>
-            <Badge colorScheme="green" variant="subtle" fontSize="10px">{t('badgeSub')}</Badge>
+            <Badge colorScheme="orange" variant="subtle" fontSize="12px" px={2} py={0.5}>{t('badgeTasa')}</Badge>
+            <Badge colorScheme="green" variant="subtle" fontSize="12px" px={2} py={0.5}>{t('badgeSub')}</Badge>
           </HStack>
         </HStack>
 
-        <Heading as="h1" fontSize={{ base: 'md', md: 'lg', lg: 'xl' }} lineHeight="1.15" mb={0}
+        <Heading as="h1" fontSize={{ base: 'xl', md: '2xl', lg: '3xl' }} lineHeight="1.2" mb={2}
           bgGradient="linear(to-r, #0ea5e9, #22c55e, #f97316)" bgClip="text">
           {t('headline')}
         </Heading>
-        <Text fontSize={{ base: '10px', md: '11px' }} color={textSecondary} mb={{ base: 1, md: 1.5 }} maxW="600px">
+        <Text fontSize={{ base: '13px', md: '15px' }} color={textSecondary} mb={{ base: 4, md: 6 }} maxW="700px">
           {t('subheadline')}
         </Text>
 
         {/* ===== MAIN 3-COL GRID ===== */}
         <Box display={{ base: 'flex', md: 'grid' }} flexDirection="column"
-          gridTemplateColumns={{ md: '1fr 1fr 1.5fr' }} gap={{ base: 2, md: 2.5 }}>
+          gridTemplateColumns={{ md: '1fr 1fr 1.5fr' }} gap={{ base: 4, md: 6 }}>
 
           {/* —— COL 1: Inputs —— */}
-          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" p={3}
-            boxShadow={cardShadow} transition="background 0.3s, border-color 0.3s">
-            <HStack spacing={2} mb={2}>
-              <Box bg={dark ? 'orange.900' : 'orange.100'} p={1} rounded="md">
-                <Icon as={AlertTriangle} boxSize="13px" color="orange.500" />
+          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="2xl" p={5}
+            boxShadow={cardShadow} transition="all 0.3s ease" cursor="pointer"
+            _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 8px 24px -6px rgba(0,0,0,0.5)' : '0 8px 24px -6px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
+            <HStack spacing={3} mb={3}>
+              <Box bg={dark ? 'orange.900' : 'orange.100'} p={1.5} rounded="lg">
+                <Icon as={AlertTriangle} boxSize="16px" color="orange.500" />
               </Box>
-              <Text fontSize="13px" fontWeight="700" color={textPrimary}>{t('inputTitle')}</Text>
+              <Text fontSize="15px" fontWeight="700" color={textPrimary}>{t('inputTitle')}</Text>
             </HStack>
 
-            <VStack spacing={2} align="stretch">
+            <VStack spacing={4} align="stretch">
               <FormControl>
-                <FormLabel fontSize="12px" fontWeight="600" mb={1} color={textPrimary}>{t('enrollment')}</FormLabel>
-                <Input type="number" value={enrollment} size="sm" rounded="lg"
+                <FormLabel fontSize="14px" fontWeight="600" mb={2} color={textPrimary}>{t('enrollment')}</FormLabel>
+                <Input type="number" value={enrollment} size="md" rounded="lg"
                   bg={dark ? 'gray.700' : 'white'} borderColor={cardBorder} color={textPrimary}
                   onChange={(e) => setEnrollment(Number(e.target.value))} min={1} />
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="12px" fontWeight="600" mb={1} color={textPrimary}>{t('sustainerType')}</FormLabel>
-                <Select value={sustainer} size="sm" rounded="lg"
+                <FormLabel fontSize="14px" fontWeight="600" mb={2} color={textPrimary}>{t('sustainerType')}</FormLabel>
+                <Select value={sustainer} size="md" rounded="lg"
                   bg={dark ? 'gray.700' : 'white'} borderColor={cardBorder}
                   color={dark ? '#ffffff' : '#1e293b'}
                   iconColor={dark ? '#ffffff' : undefined}
@@ -387,8 +378,8 @@ const DropoutCalculator: React.FC = () => {
               </FormControl>
 
               <FormControl>
-                <FormLabel fontSize="12px" fontWeight="600" mb={1} color={textPrimary}>{t('iveLevel')}</FormLabel>
-                <Select value={ive} size="sm" rounded="lg"
+                <FormLabel fontSize="14px" fontWeight="600" mb={2} color={textPrimary}>{t('iveLevel')}</FormLabel>
+                <Select value={ive} size="md" rounded="lg"
                   bg={dark ? 'gray.700' : 'white'} borderColor={cardBorder}
                   color={dark ? '#ffffff' : '#1e293b'}
                   iconColor={dark ? '#ffffff' : undefined}
@@ -400,19 +391,19 @@ const DropoutCalculator: React.FC = () => {
                 </Select>
               </FormControl>
 
-              <HStack spacing={2} p={2} bg={dark ? 'rgba(249,115,22,0.2)' : 'orange.50'} rounded="lg"
+              <HStack spacing={3} p={3} bg={dark ? 'rgba(249,115,22,0.2)' : 'orange.50'} rounded="lg"
                 border="1px solid" borderColor={dark ? 'rgba(249,115,22,0.4)' : 'orange.100'}>
-                <Icon as={TrendingDown} color={dark ? 'orange.300' : 'orange.400'} boxSize="14px" />
-                <Text fontSize="11px" color={dark ? 'white' : 'gray.600'}>
-                  {t('tasaNote')} <Badge colorScheme="orange" fontSize="10px">2.8%</Badge> {t('tasaAdj')}
+                <Icon as={TrendingDown} color={dark ? 'orange.300' : 'orange.400'} boxSize="16px" />
+                <Text fontSize="13px" color={dark ? 'white' : 'gray.600'}>
+                  {t('tasaNote')} <Badge colorScheme="orange" fontSize="12px">2.8%</Badge> {t('tasaAdj')}
                 </Text>
               </HStack>
             </VStack>
           </Box>
 
           {/* —— COL 2: Stats + Comparison —— */}
-          <VStack spacing={2} align="stretch">
-            <SimpleGrid columns={2} spacing={2}>
+          <VStack spacing={4} align="stretch">
+            <SimpleGrid columns={2} spacing={4}>
               <MiniCard dark={dark} icon={Users} iconColor="orange.500" label={t('atRisk')}
                 value={String(animLost)} sub={t('studentsYear')} />
               <MiniCard dark={dark} icon={DollarSign} iconColor="red.500" label={t('annualLoss')}
@@ -424,33 +415,35 @@ const DropoutCalculator: React.FC = () => {
             </SimpleGrid>
 
             {/* Comparison */}
-            <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" px={3} py={2}
+            <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="2xl" px={4} py={4}
               boxShadow={cardShadow} flex="1" display="flex" flexDirection="column"
-              transition="background 0.3s, border-color 0.3s">
-              <Text fontSize="13px" fontWeight="700" mb={0.5} color={textPrimary}>{t('comparison')}</Text>
-              <Text fontSize="10px" color={textSecondary} mb={2}>{t('comparisonSub')}</Text>
-              <VStack spacing={2} align="stretch" flex="1" justify="center">
+              transition="all 0.3s ease" cursor="pointer"
+              _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 8px 24px -6px rgba(0,0,0,0.5)' : '0 8px 24px -6px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
+              <Text fontSize="14px" fontWeight="700" mb={1} color={textPrimary}>{t('comparison')}</Text>
+              <Text fontSize="12px" color={textSecondary} mb={2}>{t('comparisonSub')}</Text>
+              <VStack spacing={3} align="stretch" flex="1" justify="center">
                 <CompareBar dark={dark} label={t('accLoss')} value={results.threeYearLoss}
                   maxValue={results.threeYearLoss} color="#f97316" format={fmt} />
                 <CompareBar dark={dark} label={t('ssInvestment')} value={results.smartStudentCost}
                   maxValue={results.threeYearLoss} color="#22c55e" format={fmt} />
               </VStack>
-              <HStack mt={2} p={1.5} bg={subtleBg} rounded="md" justify="space-between">
-                <Text fontSize="10px" color={textSecondary}>{t('returnRatio')}</Text>
+              <HStack mt={2} p={2} bg={subtleBg} rounded="lg" justify="space-between">
+                <Text fontSize="12px" color={textSecondary}>{t('returnRatio')}</Text>
                 <Badge colorScheme="green" fontSize="sm" px={2}>{ratio}x</Badge>
               </HStack>
             </Box>
           </VStack>
 
           {/* —— COL 3: Chart —— */}
-          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" px={3} py={2}
+          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="2xl" px={5} py={5}
             boxShadow={cardShadow} display="flex" flexDirection="column"
-            transition="background 0.3s, border-color 0.3s">
-            <HStack justify="space-between" mb={1}>
-              <Text fontSize="13px" fontWeight="700" color={textPrimary}>{t('chartTitle')}</Text>
-              <Badge colorScheme="blue" fontSize="10px">{t('chart3y')}</Badge>
+            transition="all 0.3s ease" cursor="pointer"
+            _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 8px 24px -6px rgba(0,0,0,0.5)' : '0 8px 24px -6px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
+            <HStack justify="space-between" mb={3}>
+              <Text fontSize="15px" fontWeight="700" color={textPrimary}>{t('chartTitle')}</Text>
+              <Badge colorScheme="blue" fontSize="11px">{t('chart3y')}</Badge>
             </HStack>
-            <Box flex="1" minH="160px">
+            <Box flex="1" minH="240px">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={chartData} margin={{ top: 5, right: 10, left: -8, bottom: 5 }}>
                   <XAxis 
@@ -488,14 +481,14 @@ const DropoutCalculator: React.FC = () => {
         </Box>
 
         {/* ===== CTA HORIZONTAL ===== */}
-        <HStack rounded="xl" px={{ base: 3, md: 5 }} py={{ base: 1.5, md: 2 }} mt={2}
+        <HStack rounded="2xl" px={{ base: 5, md: 8 }} py={{ base: 4, md: 5 }} mt={6}
           bgGradient="linear(to-r, #0ea5e9, #22c55e)" color="white"
-          align="center" justify="space-between" flexWrap="wrap" gap={2}>
+          align="center" justify="space-between" flexWrap="wrap" gap={4}>
           <Box>
-            <Text fontSize="8px" textTransform="uppercase" letterSpacing="0.1em" opacity={0.85} mb={0.5}>
+            <Text fontSize="11px" textTransform="uppercase" letterSpacing="0.1em" opacity={0.85} mb={1}>
               {t('ctaLabel')}
             </Text>
-            <Text fontSize={{ base: 'xs', md: 'sm' }} fontWeight="700" lineHeight="1.3">
+            <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight="700" lineHeight="1.3">
               {t('ctaText')}
             </Text>
           </Box>

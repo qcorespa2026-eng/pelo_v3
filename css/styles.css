@@ -867,7 +867,7 @@ body.dark .bg-white { background-color: rgba(255,255,255,0.03) !important; borde
 body.dark .bg-slate-50 { background-color: rgba(255,255,255,0.02) !important; }
 body.dark .bg-slate-100 { background-color: rgba(255,255,255,0.04) !important; }
 body.dark .text-slate-900 { color: var(--text) !important; }
-body.dark .text-slate-700 { color: #cbd5e1 !important; }
+body.dark .text-slate-700:not(#theme-icon):not(#mobile-theme-icon):not(#navbar-theme-icon) { color: #cbd5e1 !important; }
 body.dark .text-slate-600 { color: var(--muted) !important; }
 body.dark .text-slate-500 { color: #64748b !important; }
 body.dark .text-slate-400 { color: #475569 !important; }

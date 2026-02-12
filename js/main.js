@@ -480,7 +480,11 @@
     if (theme === 'dark') {
       document.body.classList.add('dark');
       document.documentElement.classList.add('dark');
-      if (themeIcon) { themeIcon.classList.remove('fa-moon'); themeIcon.classList.add('fa-sun'); }
+      if (themeIcon) {
+        themeIcon.classList.remove('fa-moon');
+        themeIcon.classList.add('fa-sun');
+        themeIcon.style.color = '#fcd34d'; // yellow-300
+      }
       if (mobileThemeIcon) { mobileThemeIcon.classList.remove('fa-moon'); mobileThemeIcon.classList.add('fa-sun'); }
       // Also update mobile theme button icon if it exists
       if (mobileThemeBtn) {
@@ -490,7 +494,11 @@
     } else {
       document.body.classList.remove('dark');
       document.documentElement.classList.remove('dark');
-      if (themeIcon) { themeIcon.classList.remove('fa-sun'); themeIcon.classList.add('fa-moon'); }
+      if (themeIcon) {
+        themeIcon.classList.remove('fa-sun');
+        themeIcon.classList.add('fa-moon');
+        themeIcon.style.color = ''; // reset to CSS default
+      }
       if (mobileThemeIcon) { mobileThemeIcon.classList.remove('fa-sun'); mobileThemeIcon.classList.add('fa-moon'); }
       if (mobileThemeBtn) {
         const icon = mobileThemeBtn.querySelector('i');

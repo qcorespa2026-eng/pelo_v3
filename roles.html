@@ -15,7 +15,9 @@
     <meta property="og:url" content="https://smartstudent.io/roles">
     <meta name="theme-color" content="#2563eb">
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico?v=2">
+    <link rel="shortcut icon" href="/img/favicon.ico?v=2">
+    <link rel="apple-touch-icon" href="/img/favicon.ico?v=2">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
@@ -67,6 +69,16 @@
             box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.1);
         }
     </style>
+    <script>
+      // Apply dark mode early to avoid flash
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.addEventListener('DOMContentLoaded', () => {
+          const icon = document.getElementById('theme-icon');
+          if (icon) { icon.classList.replace('fa-moon','fa-sun'); icon.style.color = '#fcd34d'; }
+        });
+      }
+    </script>
 </head>
 <body class="font-sans text-slate-600 bg-white antialiased dark:bg-slate-900 dark:text-slate-300 transition-colors duration-300" data-page="roles">
     <!-- Skip to content link for accessibility -->
@@ -258,35 +270,6 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- Theme Toggle Logic ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const html = document.documentElement;
-        const themeIcon = document.getElementById('theme-icon');
-
-        function updateTheme(isDark) {
-            if (isDark) {
-                html.classList.add('dark');
-                if(themeIcon) themeIcon.classList.replace('fa-moon', 'fa-sun');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                html.classList.remove('dark');
-                if(themeIcon) themeIcon.classList.replace('fa-sun', 'fa-moon');
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        const savedTheme = localStorage.getItem('theme');
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (savedTheme === 'dark' || (!savedTheme && systemDark)) {
-            updateTheme(true);
-        }
-
-        if(themeToggleBtn) {
-            themeToggleBtn.addEventListener('click', () => {
-                updateTheme(!html.classList.contains('dark'));
-            });
-        }
-
         // --- Active Link Logic ---
         const container = document.getElementById('nav-container');
         const page = document.body.dataset.page;
