@@ -38,6 +38,7 @@ const DROPOUT_RATE = 0.028;
 const BASE_SUBSIDY = 120_000;
 const IVE_MULTIPLIERS: Record<string, number> = { BAJO: 1.0, MEDIO: 1.2, ALTO: 1.5 };
 const SOSTAINER_MULTIPLIERS: Record<string, number> = { MUNICIPAL: 1.0, SUBVENCIONADO: 1.1, PAGADO: 3.0 };
+const PRICE_PER_STUDENT = 2_500; // CLP por alumno al mes
 
 /* ---- i18n ---- */
 type Lang = 'es' | 'en';
@@ -47,7 +48,7 @@ const i18n: Record<Lang, Record<string, string>> = {
     badgeTasa: 'Tasa 2.8%',
     badgeSub: 'Subvención $120.000',
     headline: 'Cada alumno que pierdes tiene un costo invisible',
-    subheadline: 'Calcula la pérdida financiera anual y la proyección a 3 años. Visualiza el retorno de invertir en SmartStudent.',
+    subheadline: 'Calcula la pérdida financiera y la proyección a largo plazo. Visualiza el retorno de invertir en SmartStudent.',
     inputTitle: 'Datos del establecimiento',
     enrollment: 'Matrícula total',
     sustainerType: 'Tipo de sostenedor',
@@ -64,23 +65,28 @@ const i18n: Record<Lang, Record<string, string>> = {
     studentsYear: 'alumnos / año',
     annualLoss: 'Pérdida anual',
     subsidy: 'subvención',
-    threeYears: '3 años',
+    projectedLoss: 'Pérdida Proyectada',
     accumulated: 'acumulado',
     ssSavings: 'Ahorro con SS',
     potential: 'potencial',
+    ssInvestmentLabel: 'Inversión SS',
+    ssInvestmentSub: 'SaaS anual',
     comparison: 'Comparación directa',
-    comparisonSub: 'Inacción 3 años vs inversión SmartStudent',
+    comparisonSub: 'Inacción vs inversión SmartStudent',
     accLoss: 'Pérdida acumulada',
     ssInvestment: 'Inversión SmartStudent',
     returnRatio: 'Ratio de retorno',
     chartTitle: 'Pérdida vs inversión',
-    chart3y: '3 años',
-    chartLoss: 'Pérdida 3 años',
+    chartPeriod: 'años',
+    chartLoss: 'Pérdida Proyectada',
     chartInv: 'Inversión SS',
     chartAmount: 'Monto',
     ctaLabel: 'Acción inmediata',
-    ctaText: 'Detener esta pérdida cuesta menos que recuperar 5 alumnos',
+    ctaText: 'La brecha crece cada año. Actúa ahora y protege tu matrícula.',
     ctaBtn: 'Detener Pérdida',
+    year1: '1 Año',
+    year3: '3 Años',
+    year5: '5 Años',
     navInicio: 'Inicio',
     navFeatures: 'Características',
     navRoles: 'Roles',
@@ -92,7 +98,7 @@ const i18n: Record<Lang, Record<string, string>> = {
     badgeTasa: 'Rate 2.8%',
     badgeSub: 'Subsidy $120,000',
     headline: 'Every student you lose has an invisible cost',
-    subheadline: 'Calculate annual financial loss and 3-year projection. Visualize the return on investing in SmartStudent.',
+    subheadline: 'Calculate financial loss and long-term projection. Visualize the return on investing in SmartStudent.',
     inputTitle: 'Institution Data',
     enrollment: 'Total Enrollment',
     sustainerType: 'School Type',
@@ -109,23 +115,28 @@ const i18n: Record<Lang, Record<string, string>> = {
     studentsYear: 'students / year',
     annualLoss: 'Annual Loss',
     subsidy: 'subsidy',
-    threeYears: '3 Years',
+    projectedLoss: 'Projected Loss',
     accumulated: 'accumulated',
     ssSavings: 'SS Savings',
     potential: 'potential',
+    ssInvestmentLabel: 'SS Investment',
+    ssInvestmentSub: 'annual SaaS',
     comparison: 'Direct Comparison',
-    comparisonSub: '3-year inaction vs SmartStudent investment',
+    comparisonSub: 'Inaction vs SmartStudent investment',
     accLoss: 'Accumulated Loss',
     ssInvestment: 'SmartStudent Investment',
     returnRatio: 'Return Ratio',
     chartTitle: 'Loss vs Investment',
-    chart3y: '3 Years',
-    chartLoss: '3-Year Loss',
+    chartPeriod: 'years',
+    chartLoss: 'Projected Loss',
     chartInv: 'SS Investment',
     chartAmount: 'Amount',
     ctaLabel: 'Immediate Action',
-    ctaText: 'Stopping this loss costs less than recovering 5 students',
+    ctaText: 'The gap grows every year. Act now and protect your enrollment.',
     ctaBtn: 'Stop Loss',
+    year1: '1 Year',
+    year3: '3 Years',
+    year5: '5 Years',
     navInicio: 'Home',
     navFeatures: 'Features',
     navRoles: 'Roles',
@@ -247,6 +258,7 @@ const DropoutCalculator: React.FC = () => {
   const [enrollment, setEnrollment] = useState<number>(800);
   const [sustainer, setSustainer] = useState<string>('SUBVENCIONADO');
   const [ive, setIve] = useState<string>('MEDIO');
+  const [temporalidad, setTemporalidad] = useState<number>(1);
 
   // Expose lang toggle to static navbar
   const langToggle = useCallback(() => setLang((l) => (l === 'es' ? 'en' : 'es')), []);
@@ -291,27 +303,29 @@ const DropoutCalculator: React.FC = () => {
     const studentsLost = Math.ceil(enrollment * DROPOUT_RATE);
     const monthlyLoss = studentsLost * monthlyIncome;
     const annualLoss = monthlyLoss * 12;
-    const threeYearLoss = annualLoss * 3;
-    const recoveryValue = 5 * monthlyIncome * 12;
-    const smartStudentCost = recoveryValue * 0.6;
-    const savings = threeYearLoss - smartStudentCost;
-    return { studentsLost, annualLoss, threeYearLoss, smartStudentCost, savings };
-  }, [enrollment, sustainer, ive]);
+    // New SaaS pricing: $2.500 CLP × matrícula total × 12 meses
+    const smartStudentAnnualCost = enrollment * PRICE_PER_STUDENT * 12;
+    // Projected values based on temporalidad
+    const projectedLoss = annualLoss * temporalidad;
+    const projectedInvestment = smartStudentAnnualCost * temporalidad;
+    const savings = projectedLoss - projectedInvestment;
+    return { studentsLost, annualLoss, smartStudentAnnualCost, projectedLoss, projectedInvestment, savings };
+  }, [enrollment, sustainer, ive, temporalidad]);
 
   const animLost = useAnimatedNumber(results.studentsLost);
   const animAnnual = useAnimatedNumber(results.annualLoss, 600);
-  const animThree = useAnimatedNumber(results.threeYearLoss, 600);
+  const animProjected = useAnimatedNumber(results.projectedLoss, 600);
   const animSavings = useAnimatedNumber(results.savings, 600);
 
   const chartData = [
-    { name: t('chartLoss'), monto: results.threeYearLoss, color: '#f97316' },
-    { name: t('chartInv'), monto: results.smartStudentCost, color: '#22c55e' },
+    { name: t('chartLoss'), monto: results.projectedLoss, color: '#f97316' },
+    { name: t('chartInv'), monto: results.projectedInvestment, color: '#22c55e' },
   ];
 
   const fmt = (value: number) =>
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
 
-  const ratio = (results.threeYearLoss / results.smartStudentCost).toFixed(1);
+  const ratio = (results.projectedLoss / results.projectedInvestment).toFixed(1);
 
   return (
     <Box display="flex" flexDirection="column"
@@ -408,10 +422,10 @@ const DropoutCalculator: React.FC = () => {
                 value={String(animLost)} sub={t('studentsYear')} />
               <MiniCard dark={dark} icon={DollarSign} iconColor="red.500" label={t('annualLoss')}
                 value={fmt(animAnnual)} sub={t('subsidy')} />
-              <MiniCard dark={dark} icon={Calendar} iconColor="green.500" label={t('threeYears')}
-                value={fmt(animThree)} sub={t('accumulated')} />
-              <MiniCard dark={dark} icon={Zap} iconColor="blue.400" label={t('ssSavings')}
-                value={fmt(animSavings)} sub={t('potential')} />
+              <MiniCard dark={dark} icon={Calendar} iconColor="orange.400" label={t('projectedLoss')}
+                value={fmt(animProjected)} sub={`${temporalidad} ${t('chartPeriod')} ${t('accumulated')}`} />
+              <MiniCard dark={dark} icon={Zap} iconColor="green.500" label={t('ssSavings')}
+                value={fmt(animSavings)} sub={`${temporalidad} ${t('chartPeriod')} ${t('potential')}`} />
             </SimpleGrid>
 
             {/* Comparison */}
@@ -422,10 +436,10 @@ const DropoutCalculator: React.FC = () => {
               <Text fontSize="14px" fontWeight="700" mb={1} color={textPrimary}>{t('comparison')}</Text>
               <Text fontSize="12px" color={textSecondary} mb={2}>{t('comparisonSub')}</Text>
               <VStack spacing={3} align="stretch" flex="1" justify="center">
-                <CompareBar dark={dark} label={t('accLoss')} value={results.threeYearLoss}
-                  maxValue={results.threeYearLoss} color="#f97316" format={fmt} />
-                <CompareBar dark={dark} label={t('ssInvestment')} value={results.smartStudentCost}
-                  maxValue={results.threeYearLoss} color="#22c55e" format={fmt} />
+                <CompareBar dark={dark} label={t('accLoss')} value={results.projectedLoss}
+                  maxValue={results.projectedLoss} color="#f97316" format={fmt} />
+                <CompareBar dark={dark} label={t('ssInvestment')} value={results.projectedInvestment}
+                  maxValue={results.projectedLoss} color="#22c55e" format={fmt} />
               </VStack>
               <HStack mt={2} p={2} bg={subtleBg} rounded="lg" justify="space-between">
                 <Text fontSize="12px" color={textSecondary}>{t('returnRatio')}</Text>
@@ -439,9 +453,20 @@ const DropoutCalculator: React.FC = () => {
             boxShadow={cardShadow} display="flex" flexDirection="column"
             transition="all 0.3s ease" cursor="pointer"
             _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 8px 24px -6px rgba(0,0,0,0.5)' : '0 8px 24px -6px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-            <HStack justify="space-between" mb={3}>
+            <HStack justify="space-between" mb={3} flexWrap="wrap" gap={2}>
               <Text fontSize="15px" fontWeight="700" color={textPrimary}>{t('chartTitle')}</Text>
-              <Badge colorScheme="blue" fontSize="11px">{t('chart3y')}</Badge>
+              <HStack spacing={0} bg={dark ? 'gray.700' : 'gray.100'} rounded="lg" p="2px">
+                {([1, 3, 5] as const).map((y) => (
+                  <Button key={y} size="xs" fontSize="12px" fontWeight={temporalidad === y ? '700' : '500'}
+                    bg={temporalidad === y ? (dark ? 'blue.600' : 'blue.500') : 'transparent'}
+                    color={temporalidad === y ? 'white' : (dark ? 'gray.300' : 'gray.600')}
+                    rounded="md" px={3} minW="auto"
+                    _hover={{ bg: temporalidad === y ? (dark ? 'blue.500' : 'blue.600') : (dark ? 'gray.600' : 'gray.200') }}
+                    onClick={() => setTemporalidad(y)}>
+                    {t(`year${y}` as keyof typeof i18n.es)}
+                  </Button>
+                ))}
+              </HStack>
             </HStack>
             <Box flex="1" minH="240px">
               <ResponsiveContainer width="100%" height="100%">
