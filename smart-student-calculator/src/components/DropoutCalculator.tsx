@@ -41,8 +41,8 @@ const SOSTAINER_MULTIPLIERS: Record<string, number> = { MUNICIPAL: 1.0, SUBVENCI
 /* ---- Dynamic pricing (economies of scale) ---- */
 type PriceTier = 'BASE' | 'VOLUMEN' | 'CORPORATIVO';
 function getPrecioPorAlumno(matricula: number): { precio: number; tier: PriceTier } {
-  if (matricula > 1000) return { precio: 1_500, tier: 'CORPORATIVO' };
-  if (matricula > 400)  return { precio: 2_000, tier: 'VOLUMEN' };
+  if (matricula > 1500) return { precio: 1_500, tier: 'CORPORATIVO' };
+  if (matricula > 500)  return { precio: 2_000, tier: 'VOLUMEN' };
   return { precio: 2_500, tier: 'BASE' };
 }
 
@@ -94,9 +94,9 @@ const i18n: Record<Lang, Record<string, string>> = {
     ctaRecoveryStudent: 'alumno',
     ctaRecoveryStudents: 'alumnos',
     ctaBtn: 'Detener Pérdida',
-    tierBase: 'Precio Base',
-    tierVolumen: '¡Descuento por Volumen Aplicado!',
-    tierCorporativo: 'Tarifa Preferencial Corporativa',
+    tierBase: 'Plan Básico',
+    tierVolumen: 'Plan Crecimiento — ¡Descuento Aplicado!',
+    tierCorporativo: 'Plan Redes — Tarifa Preferencial',
     pricePerStudent: 'por alumno/mes',
     year1: '1 Año',
     year3: '3 Años',
@@ -152,9 +152,9 @@ const i18n: Record<Lang, Record<string, string>> = {
     ctaRecoveryStudent: 'student',
     ctaRecoveryStudents: 'students',
     ctaBtn: 'Stop Loss',
-    tierBase: 'Standard Price',
-    tierVolumen: 'Volume Discount Applied!',
-    tierCorporativo: 'Corporate Preferred Rate',
+    tierBase: 'Basic Plan',
+    tierVolumen: 'Growth Plan — Discount Applied!',
+    tierCorporativo: 'Networks Plan — Preferred Rate',
     pricePerStudent: 'per student/month',
     year1: '1 Year',
     year3: '3 Years',
@@ -401,7 +401,7 @@ const DropoutCalculator: React.FC = () => {
                 <Input type="number" value={enrollment} size="md" rounded="lg"
                   bg={dark ? 'gray.700' : 'white'} borderColor={cardBorder} color={textPrimary}
                   onChange={(e) => setEnrollment(Number(e.target.value))} min={1} />
-                {/* Dynamic pricing badge */}
+                {/* Dynamic pricing badge — plan name only */}
                 <HStack mt={2} spacing={2} align="center">
                   <Badge
                     colorScheme={results.priceTier === 'CORPORATIVO' ? 'purple' : results.priceTier === 'VOLUMEN' ? 'green' : 'gray'}
@@ -412,9 +412,6 @@ const DropoutCalculator: React.FC = () => {
                       : results.priceTier === 'VOLUMEN' ? t('tierVolumen')
                       : t('tierBase')}
                   </Badge>
-                  <Text fontSize="11px" color={results.priceTier !== 'BASE' ? 'green.500' : textSecondary} fontWeight="600">
-                    {fmt(results.pricePerStudent)} {t('pricePerStudent')}
-                  </Text>
                 </HStack>
               </FormControl>
 
