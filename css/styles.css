@@ -432,6 +432,22 @@ img {
   width: 100%;
 }
 
+/* Navbar slide-down entrance animation */
+@keyframes navSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-animate {
+  animation: navSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
 /* Navbar */
 .navbar {
   position: sticky;
@@ -488,12 +504,6 @@ img {
 #nav-container a.nav-link.active::after,
 #nav-container a.nav-link[aria-current="page"]::after {
   transform: translateX(-50%) scaleX(1) !important;
-}
-
-/* Dark mode indicator */
-body.dark #nav-container .nav-link::after,
-.dark #nav-container .nav-link::after {
-  background: #ffffff;
 }
 
 .logo {

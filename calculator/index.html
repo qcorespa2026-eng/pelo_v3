@@ -62,20 +62,53 @@
           border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         /* Navigation active indicator */
+        @keyframes navSlideDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-animate {
+          animation: navSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
         #nav-container .nav-link {
             position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: color 0.2s ease;
+            background: transparent !important;
         }
-        #nav-container .nav-link.active::after,
-        #nav-container a.nav-link[aria-current="page"]::after {
+        #nav-container .nav-link::after {
             content: '';
             position: absolute;
             bottom: 0;
             left: 50%;
-            transform: translateX(-50%) scaleX(1) !important;
+            transform: translateX(-50%) scaleX(0);
             width: 24px;
             height: 3px;
             background: #2563eb;
             border-radius: 999px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #nav-container .nav-link:hover::after {
+            transform: translateX(-50%) scaleX(0.6);
+        }
+        #nav-container .nav-link.active::after,
+        #nav-container a.nav-link[aria-current="page"]::after {
+            transform: translateX(-50%) scaleX(1) !important;
+        }
+        /* Active nav link styling */
+        nav a[aria-current="page"],
+        nav a.nav-link.active {
+            color: #2563eb !important;
+            font-weight: 600 !important;
+        }
+        body.dark nav a.nav-link.active,
+        body.dark nav a[aria-current="page"],
+        .dark nav a.nav-link.active,
+        .dark nav a[aria-current="page"] {
+            color: #fff !important;
         }
         @keyframes pulse {
           0%, 100% { opacity: 1; transform: scale(1); }
@@ -96,7 +129,7 @@
   </head>
   <body class="font-sans dark:bg-slate-900 dark:text-slate-300 transition-colors duration-300">
     <!-- Navegación (mismo estilo que el sitio principal) -->
-    <nav class="fixed w-full z-50 transition-all duration-300 glass py-3">
+    <nav class="fixed w-full z-50 transition-all duration-300 glass py-3 nav-animate">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center">
                 <!-- Logo -->
