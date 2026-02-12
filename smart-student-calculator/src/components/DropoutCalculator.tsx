@@ -483,7 +483,9 @@ const DropoutCalculator: React.FC = () => {
         {/* ===== CTA HORIZONTAL ===== */}
         <HStack rounded="2xl" px={{ base: 5, md: 8 }} py={{ base: 4, md: 5 }} mt={6}
           bgGradient="linear(to-r, #0ea5e9, #22c55e)" color="white"
-          align="center" justify="space-between" flexWrap="wrap" gap={4}>
+          align="center" justify="space-between" flexWrap="wrap" gap={4}
+          transition="all 0.3s ease" cursor="pointer"
+          _hover={{ transform: 'translateY(-4px)', boxShadow: '0 8px 24px -6px rgba(0,0,0,0.35)' }}>
           <Box>
             <Text fontSize="11px" textTransform="uppercase" letterSpacing="0.1em" opacity={0.85} mb={1}>
               {t('ctaLabel')}
