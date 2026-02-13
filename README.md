@@ -134,7 +134,7 @@ npm run dev
 ```bash
 cd smart-student-calculator
 npm run build
-# Los archivos generados se copian a /calculator/
+# Los archivos generados se copian a /lab/
 ```
 
 ---
@@ -147,7 +147,7 @@ npm run build
 | `/features.html` | Detalle de los 4 módulos: Académico, Financiero, Estadístico, Comunidad |
 | `/roles.html` | Experiencia por rol: Rectores, Profesores, Estudiantes, Apoderados |
 | `/plans.html` | Planes de precios con infografía del iceberg del ausentismo |
-| `/calculator/` | Calculadora interactiva de deserción estudiantil |
+| `/lab/` | Calculadora interactiva de precios y ROI |
 
 ---
 
