@@ -1066,7 +1066,12 @@ const DropoutCalculator: React.FC = () => {
               return (
                 <Box bg={cardBg} border="2px solid" borderColor={planColor} rounded="xl" p={5}
                   boxShadow={`0 4px 20px -6px ${planColor}25`} mt={4}
-                  transition="all 0.3s ease">
+                  transition="all 0.3s ease" cursor="pointer"
+                  _hover={{
+                    transform: 'translateY(-4px)',
+                    boxShadow: `0 12px 30px -8px ${planColor}40`,
+                    borderColor: planColor,
+                  }}>
                   <HStack spacing={2} mb={3}>
                     <Icon as={BookOpen} boxSize="16px" color={planColor} />
                     <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('features')}</Text>
