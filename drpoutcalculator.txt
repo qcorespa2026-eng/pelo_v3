@@ -71,11 +71,11 @@ interface PriceTier {
 }
 
 const PRICE_MATRIX: PriceTier[] = [
-  { min: 0,    max: 300,  basico: 0.025, profesional: 0.045, institucional: 0.060 },
-  { min: 301,  max: 800,  basico: 0.020, profesional: 0.035, institucional: 0.050 },
-  { min: 801,  max: 1500, basico: 0.018, profesional: 0.030, institucional: 0.042 },
-  { min: 1501, max: 3000, basico: 0.015, profesional: 0.026, institucional: 0.036 },
-  { min: 3001, max: 99999, basico: 0.012, profesional: 0.022, institucional: null },
+  { min: 0,    max: 300,  basico: 0.030, profesional: 0.050, institucional: 0.065 },
+  { min: 301,  max: 800,  basico: 0.025, profesional: 0.040, institucional: 0.055 },
+  { min: 801,  max: 1500, basico: 0.022, profesional: 0.032, institucional: 0.045 },
+  { min: 1501, max: 3000, basico: 0.019, profesional: 0.028, institucional: 0.038 },
+  { min: 3001, max: 99999, basico: 0.016, profesional: 0.024, institucional: null },
 ];
 
 function getPriceUF(enrollment: number, plan: PlanKey): number | null {
