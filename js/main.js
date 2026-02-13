@@ -117,8 +117,8 @@
       "cta.button": "Schedule Demo",
       
       // Pricing
-      "pricing.title": "Transparent pricing",
-      "pricing.subtitle": "Per student pricing. Cancel anytime.",
+      "pricing.title": "A plan for every stage of your institution",
+      "pricing.subtitle": "From regulatory compliance to intelligent retention. Scale at your own pace.",
       "pricing.plan.start.focus": "Focus: Meet the Standard (Circular 30)",
       "pricing.plan.start.title": "Basic Plan",
       "pricing.plan.start.tagline": "(Smart Compliance)",
@@ -140,7 +140,7 @@
       "pricing.plan.growth.b2": "<i class='fa-solid fa-users text-brand-600'></i> Student Access (Homework & Resources)",
       "pricing.plan.growth.b3": "<i class='fa-solid fa-bell text-brand-600'></i> <strong>Interactive Parents (Messaging & Push Alerts)</strong>",
       "pricing.plan.growth.b4": "<i class='fa-solid fa-robot text-brand-600'></i> <strong>AI Assessment Generator</strong>",
-      "pricing.plan.growth.b5": "<i class='fa-solid fa-comments text-brand-600'></i> Live Chat Support",
+      "pricing.plan.growth.b5": "<i class='fa-solid fa-comments text-brand-600'></i> Priority Support",
       "pricing.plan.growth.button": "Schedule Demo",
       "pricing.plan.enterprise.focus": "Focus: Protect Enrollment (Administration)",
       "pricing.plan.enterprise.title": "Institutional Plan",
@@ -310,8 +310,8 @@
       "cta.button": "Agendar Demo",
       
       // Pricing
-      "pricing.title": "Inversión transparente",
-      "pricing.subtitle": "Precios por alumno matriculado. Cancele cuando quiera.",
+      "pricing.title": "Un plan para cada etapa de tu institución",
+      "pricing.subtitle": "Desde el cumplimiento normativo hasta la retención inteligente. Escala a tu ritmo.",
       "pricing.plan.start.focus": "Enfoque: Cumplir la Norma (Circular 30)",
       "pricing.plan.start.title": "Plan Básico",
       "pricing.plan.start.tagline": "(Smart Compliance)",
@@ -333,7 +333,7 @@
       "pricing.plan.growth.b2": "<i class='fa-solid fa-users text-brand-600'></i> Acceso Alumnos (Tareas y Recursos)",
       "pricing.plan.growth.b3": "<i class='fa-solid fa-bell text-brand-600'></i> <strong>Apoderados Interactivos (Mensajería y Alertas Push)</strong>",
       "pricing.plan.growth.b4": "<i class='fa-solid fa-robot text-brand-600'></i> <strong>Generador de Evaluaciones con IA</strong>",
-      "pricing.plan.growth.b5": "<i class='fa-solid fa-comments text-brand-600'></i> Soporte por Chat en Vivo",
+      "pricing.plan.growth.b5": "<i class='fa-solid fa-comments text-brand-600'></i> Soporte Prioritario",
       "pricing.plan.growth.button": "Agendar Demo",
       "pricing.plan.enterprise.focus": "Enfoque: Proteger la Matrícula (Sostenedor)",
       "pricing.plan.enterprise.title": "Plan Institucional",
