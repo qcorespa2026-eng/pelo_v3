@@ -35,7 +35,6 @@ import {
   Brain,
   Shield,
   Wallet,
-  Building,
   MessageSquare,
   BarChart3,
   Bell,
@@ -56,8 +55,6 @@ const DEFAULT_UF_VALUE = 38_500;
 const ANNUAL_SUBSIDY_PER_STUDENT = 1_500_000;
 /** Average dropout rate */
 const DROPOUT_RATE = 0.03;
-/** Retention promise with SS Institucional */
-const RETENTION_RATE = 0.50;
 
 // --- Pricing Matrix (UF netas por alumno mensual) ---
 type PlanKey = 'basico' | 'profesional' | 'institucional';
@@ -67,7 +64,7 @@ interface PriceTier {
   max: number;
   basico: number;
   profesional: number;
-  institucional: number | null; // null = "Cotizar"
+  institucional: number;
 }
 
 const PRICE_MATRIX: PriceTier[] = [
@@ -75,12 +72,12 @@ const PRICE_MATRIX: PriceTier[] = [
   { min: 301,  max: 800,  basico: 0.017, profesional: 0.032, institucional: 0.045 },
   { min: 801,  max: 1500, basico: 0.013, profesional: 0.028, institucional: 0.038 },
   { min: 1501, max: 3000, basico: 0.010, profesional: 0.024, institucional: 0.032 },
-  { min: 3001, max: 99999, basico: 0.009, profesional: 0.020, institucional: null },
+  { min: 3001, max: 99999, basico: 0.009, profesional: 0.020, institucional: 0.028 },  // shadow price
 ];
 
-function getPriceUF(enrollment: number, plan: PlanKey): number | null {
+function getPriceUF(enrollment: number, plan: PlanKey): number {
   const tier = PRICE_MATRIX.find(t => enrollment >= t.min && enrollment <= t.max);
-  if (!tier) return null;
+  if (!tier) return 0;
   return tier[plan];
 }
 
@@ -159,7 +156,7 @@ const i18n: Record<Lang, Record<string, string>> = {
     subsidyLabel: 'subvención',
     projectedLoss: 'Pérdida Proyectada',
     accumulated: 'acumulado',
-    ssSavings: 'Ahorro con SS',
+    ssSavings: 'Ahorro Proyectado',
     potential: 'potencial',
     ssInvestmentLabel: 'Inversión SS',
     ssInvestmentSub: 'SaaS anual',
@@ -242,7 +239,7 @@ const i18n: Record<Lang, Record<string, string>> = {
     subsidyLabel: 'subsidy',
     projectedLoss: 'Projected Loss',
     accumulated: 'accumulated',
-    ssSavings: 'SS Savings',
+    ssSavings: 'Projected Savings',
     potential: 'potential',
     ssInvestmentLabel: 'SS Investment',
     ssInvestmentSub: 'annual SaaS',
@@ -421,7 +418,7 @@ const DropoutCalculator: React.FC = () => {
   const { dark } = useThemeToggle();
   const [lang, setLang] = useState<Lang>(() => (localStorage.getItem('lang') === 'en' ? 'en' : 'es'));
   const t = useCallback((key: string) => i18n[lang][key] ?? key, [lang]);
-  const [enrollment, setEnrollment] = useState<number>(500);
+  const [enrollment, setEnrollment] = useState<number>(1000);
   const [selectedPlan, setSelectedPlan] = useState<PlanKey>('profesional');
   const [showSliderTooltip, setShowSliderTooltip] = useState(false);
   const [temporalidad, setTemporalidad] = useState<number>(1);
@@ -467,8 +464,8 @@ const DropoutCalculator: React.FC = () => {
   // --- Calculations ---
   const pricing = useMemo(() => {
     const priceUF = getPriceUF(enrollment, selectedPlan);
-    const needsQuote = priceUF === null;
-    const unitPriceUF = priceUF ?? 0;
+    const needsQuote = enrollment > 3000 && selectedPlan === 'institucional';
+    const unitPriceUF = priceUF;
     const monthlyUF = unitPriceUF * enrollment;
     const annualUF = monthlyUF * 12;
     const monthlyCLP = monthlyUF * ufValue;
@@ -489,7 +486,7 @@ const DropoutCalculator: React.FC = () => {
     const studentsLost = Math.ceil(enrollment * DROPOUT_RATE);
     const annualLoss = studentsLost * ANNUAL_SUBSIDY_PER_STUDENT;
     const annualCostCLP = pricing.annualCLP;
-    const recovered = Math.round(annualLoss * RETENTION_RATE);
+    const recovered = Math.max(0, Math.round(annualLoss - annualCostCLP));
     const studentsToBreakeven = annualCostCLP > 0
       ? Math.ceil(annualCostCLP / ANNUAL_SUBSIDY_PER_STUDENT)
       : 0;
@@ -515,7 +512,7 @@ const DropoutCalculator: React.FC = () => {
     new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP', maximumFractionDigits: 0 }).format(value);
 
   const fmtUF = (value: number) =>
-    value % 1 === 0 ? `${value} UF` : `${value.toFixed(3)} UF`;
+    `${value.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 3 })} UF`;
 
   // ROI Chart data (scaled by temporalidad)
   const roiChartData = [
@@ -775,20 +772,6 @@ const DropoutCalculator: React.FC = () => {
         {/* ===== EXPANDED: TEMPORALIDAD SELECTOR + LARGE STAT CARDS ===== */}
         {expanded && (
           <Box mb={5}>
-            <HStack justify="flex-end" mb={2}>
-              <HStack spacing={0} bg={dark ? 'gray.700' : 'gray.100'} rounded="lg" p="2px">
-                {([1, 3, 5] as const).map((y) => (
-                  <Button key={y} size="xs" fontSize="12px" fontWeight={temporalidad === y ? '700' : '500'}
-                    bg={temporalidad === y ? (dark ? 'blue.600' : 'blue.500') : 'transparent'}
-                    color={temporalidad === y ? 'white' : (dark ? 'gray.300' : 'gray.600')}
-                    rounded="md" px={3} minW="auto"
-                    _hover={{ bg: temporalidad === y ? (dark ? 'blue.500' : 'blue.600') : (dark ? 'gray.600' : 'gray.200') }}
-                    onClick={() => setTemporalidad(y)}>
-                    {t(`year${y}` as keyof typeof i18n.es)}
-                  </Button>
-                ))}
-              </HStack>
-            </HStack>
             <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3}>
               <MiniCard dark={dark} icon={Users} iconColor="orange.500" label={t('atRisk')}
                 value={String(animStudentsLost)} sub={t('studentsYear')} />
@@ -821,15 +804,25 @@ const DropoutCalculator: React.FC = () => {
             }}>
 
             {/* Summary numbers */}
-            {!pricing.needsQuote ? (
               <VStack spacing={4} align="stretch">
                 {/* Main price */}
                 <Box textAlign="center" py={3} bg={dark ? 'gray.750' : 'blue.50'} rounded="xl"
                   border="1px solid" borderColor={dark ? 'gray.600' : 'blue.100'}>
                   <Text fontSize="11px" color={textSecondary} mb={0.5} fontWeight="600" textTransform="uppercase">{t('unitPrice')}</Text>
-                  <Text fontSize="2xl" fontWeight="900" color={planColor}>
-                    {fmtUF(pricing.unitPriceUF)}
-                  </Text>
+                  {pricing.needsQuote ? (
+                    <>
+                      <Text fontSize="2xl" fontWeight="900" color="purple.400">
+                        {lang === 'es' ? 'Cotizar' : 'Quote'}
+                      </Text>
+                      <Text fontSize="10px" color={textSecondary} mt={0.5}>
+                        *{lang === 'es' ? 'Cálculos basados en valor referencial' : 'Calculations based on reference value'}: {fmtUF(pricing.unitPriceUF)}
+                      </Text>
+                    </>
+                  ) : (
+                    <Text fontSize="2xl" fontWeight="900" color={planColor}>
+                      {fmtUF(pricing.unitPriceUF)}
+                    </Text>
+                  )}
                   <Text fontSize="11px" color={textSecondary}>{t('perStudentMonth')}</Text>
                 </Box>
 
@@ -935,7 +928,7 @@ const DropoutCalculator: React.FC = () => {
                                   ? plans.find(p => p.key === planKey)!.color
                                   : textPrimary}
                                 borderBottom="1px solid" borderColor={dark ? 'gray.700' : 'gray.100'}>
-                                {tier[planKey] !== null ? `${tier[planKey]} UF` : (lang === 'es' ? 'Cotizar' : 'Quote')}
+                                {tier.min > 3000 && planKey === 'institucional' ? (lang === 'es' ? 'Cotizar' : 'Quote') : `${tier[planKey]} UF`}
                               </Box>
                             ))}
                           </Box>
@@ -944,22 +937,23 @@ const DropoutCalculator: React.FC = () => {
                     </Box>
                   </Box>
                 </Box>}
+
+                {/* Contactar Ventas (shadow pricing) */}
+                {pricing.needsQuote && (
+                  <Box p={3} bg={dark ? 'purple.900' : 'purple.50'} rounded="lg"
+                    border="1px solid" borderColor={dark ? 'purple.700' : 'purple.200'} textAlign="center">
+                    <Text fontSize="11px" color={dark ? 'purple.200' : 'purple.700'} mb={2} fontWeight="600">
+                      {lang === 'es'
+                        ? 'Para +3.000 alumnos, contáctenos para una tarifa personalizada.'
+                        : 'For 3,000+ students, contact us for a custom rate.'}
+                    </Text>
+                    <Button as="a" href="/index.html#demo" bg="purple.600" color="white" rounded="lg" px={6} size="sm"
+                      _hover={{ bg: 'purple.500', transform: 'translateY(-2px)' }}>
+                      {t('contactSales')}
+                    </Button>
+                  </Box>
+                )}
               </VStack>
-            ) : (
-              <VStack spacing={3} align="center" py={6}>
-                <Icon as={Building} boxSize="40px" color="purple.400" />
-                <Text fontSize="lg" fontWeight="800" color={textPrimary}>{t('cotizar')}</Text>
-                <Text fontSize="xs" color={textSecondary} textAlign="center" maxW="280px">
-                  {lang === 'es'
-                    ? 'Para instituciones con más de 3.000 alumnos, contáctenos para una tarifa personalizada.'
-                    : 'For institutions with 3,000+ students, contact us for a custom rate.'}
-                </Text>
-                <Button as="a" href="/index.html#demo" bg="purple.600" color="white" rounded="lg" px={6} size="sm"
-                  _hover={{ bg: 'purple.500', transform: 'translateY(-2px)' }}>
-                  {t('contactSales')}
-                </Button>
-              </VStack>
-            )}
           </Box>
             );
           })()}
@@ -967,7 +961,6 @@ const DropoutCalculator: React.FC = () => {
           {/* —— RIGHT: ROI Chart (always visible) + Features (expanded only) —— */}
           <Box>
             {/* ROI Chart - Always visible, recalculates per plan */}
-            {!pricing.needsQuote && (
               <Box bg={cardBg} border="2px solid" borderColor={plans.find(p => p.key === selectedPlan)!.color} rounded="xl" p={5}
                 boxShadow={`0 4px 20px -6px ${plans.find(p => p.key === selectedPlan)!.color}25`} transition="all 0.3s ease"
                 mb={expanded ? 4 : 0}
@@ -977,14 +970,28 @@ const DropoutCalculator: React.FC = () => {
                   boxShadow: `0 12px 30px -8px ${plans.find(p => p.key === selectedPlan)!.color}40`,
                   borderColor: plans.find(p => p.key === selectedPlan)!.color,
                 }}>
-                <HStack spacing={2} mb={1}>
-                  <Icon as={TrendingUp} boxSize="16px" color="green.500" />
-                  <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('roiTitle')}</Text>
+                <HStack justify="space-between" align="center" mb={1}>
+                  <HStack spacing={2}>
+                    <Icon as={TrendingUp} boxSize="16px" color="green.500" />
+                    <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('roiTitle')}</Text>
+                  </HStack>
+                  <HStack spacing={0} bg={dark ? 'gray.700' : 'gray.100'} rounded="lg" p="2px">
+                    {([1, 3, 5] as const).map((y) => (
+                      <Button key={y} size="xs" fontSize="11px" fontWeight={temporalidad === y ? '700' : '500'}
+                        bg={temporalidad === y ? (dark ? 'blue.600' : 'blue.500') : 'transparent'}
+                        color={temporalidad === y ? 'white' : (dark ? 'gray.300' : 'gray.600')}
+                        rounded="md" px={2.5} minW="auto" h="22px"
+                        _hover={{ bg: temporalidad === y ? (dark ? 'blue.500' : 'blue.600') : (dark ? 'gray.600' : 'gray.200') }}
+                        onClick={() => setTemporalidad(y)}>
+                        {t(`year${y}` as keyof typeof i18n.es)}
+                      </Button>
+                    ))}
+                  </HStack>
                 </HStack>
                 <Text fontSize="11px" color={textSecondary} mb={3}>{t('roiSubtitle')}</Text>
 
                 {/* Chart */}
-                <Box h="180px" mb={3}>
+                <Box h={pricing.needsQuote ? "260px" : "180px"} mb={3}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={roiChartData} margin={{ top: 5, right: 10, left: -5, bottom: 5 }}>
                       <XAxis dataKey="name"
@@ -1041,7 +1048,7 @@ const DropoutCalculator: React.FC = () => {
                     <Text fontSize="xs" fontWeight="800" color={dark ? 'blue.200' : 'blue.600'}>
                       {fmtCLP(roi.recovered * temporalidad)}
                     </Text>
-                    <Text fontSize="9px" color={textSecondary}>50% {lang === 'es' ? 'retención' : 'retention'}</Text>
+                    <Text fontSize="9px" color={textSecondary}>{lang === 'es' ? 'neto recuperado' : 'net recovered'}</Text>
                   </Box>
                 </SimpleGrid>
 
@@ -1057,8 +1064,14 @@ const DropoutCalculator: React.FC = () => {
                     </Text>
                   </HStack>
                 </Box>
+
+                {/* Shadow pricing disclaimer */}
+                {pricing.needsQuote && (
+                  <Text fontSize="10px" color={textSecondary} fontStyle="italic" textAlign="center" mt={1}>
+                    *{lang === 'es' ? 'Valores referenciales. Precio final sujeto a cotización.' : 'Reference values. Final price subject to quote.'}
+                  </Text>
+                )}
               </Box>
-            )}
 
             {/* Plan Features Card - expanded only */}
             {expanded && (() => {
