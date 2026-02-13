@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="es" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/img/logo3.1.ico?v=3" />
+    <link rel="shortcut icon" href="/img/logo3.1.ico?v=3" />
+    <link rel="apple-touch-icon" href="/img/logo3.1.ico?v=3" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Fuentes (mismas que el sitio principal) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Alpine.js -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js" defer></script>
+
+    <!-- Configuración Tailwind (misma que el sitio principal) -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#0f172a',
+                            neon: '#00dc82',
+                        }
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-feature-settings: "cv11", "ss01";
+            -webkit-font-smoothing: antialiased;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .dark .glass {
+          background: rgba(15, 23, 42, 0.95);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Navigation active indicator */
+        @keyframes navSlideDown {
+          from { opacity: 0; transform: translateY(-100%); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-animate {
+          animation: navSlideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+        #nav-container .nav-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: color 0.2s ease;
+            background: transparent !important;
+        }
+        #nav-container .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) scaleX(0);
+            width: 24px;
+            height: 3px;
+            background: #2563eb;
+            border-radius: 999px;
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #nav-container .nav-link:hover::after {
+            transform: translateX(-50%) scaleX(0.6);
+        }
+        #nav-container .nav-link.active::after,
+        #nav-container a.nav-link[aria-current="page"]::after {
+            transform: translateX(-50%) scaleX(1) !important;
+        }
+        /* Active nav link styling */
+        nav a[aria-current="page"],
+        nav a.nav-link.active {
+            color: #2563eb !important;
+            font-weight: 600 !important;
+        }
+        body.dark nav a.nav-link.active,
+        body.dark nav a[aria-current="page"],
+        .dark nav a.nav-link.active,
+        .dark nav a[aria-current="page"] {
+            color: #fff !important;
+        }
+        @keyframes pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.6; transform: scale(0.95); }
+        }
+    </style>
+    <script>
+      // Apply dark mode early to avoid flash
+      if (localStorage.getItem('theme') === 'dark') {
+        document.documentElement.classList.add('dark');
+        document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark'));
+      }
+    </script>
+
+    <title>Calculadora Inteligente | Smart Student</title>
+    <script type="module" crossorigin src="/calculator/assets/index-aoP1z0jf.js"></script>
+    <link rel="stylesheet" crossorigin href="/calculator/assets/index-D4dBhSLZ.css">
+  </head>
+  <body class="font-sans dark:bg-slate-900 dark:text-slate-300 transition-colors duration-300">
+    <!-- Navegación (mismo estilo que el sitio principal) -->
+    <nav class="fixed w-full z-50 transition-all duration-300 glass py-3 nav-animate">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+                <a href="/index.html" class="flex items-center gap-2 group">
+                    <div class="w-10 h-10 bg-brand-600 text-white rounded-xl flex items-center justify-center text-lg shadow-lg shadow-brand-600/30 group-hover:scale-105 transition duration-300">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight text-slate-900 dark:text-white">Smart<span class="text-brand-600">Student</span></span>
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center">
+                    <div class="relative flex items-center space-x-8 mr-8" id="nav-container">
+                        <a id="nav-inicio" href="/index.html" class="nav-link text-sm font-medium text-slate-600 hover:text-brand-600 transition pt-2 pb-3 dark:text-slate-300 dark:hover:text-white">Inicio</a>
+                        <a id="nav-features" href="/features.html" class="nav-link text-sm font-medium text-slate-600 hover:text-brand-600 transition pt-2 pb-3 dark:text-slate-300 dark:hover:text-white">Características</a>
+                        <a id="nav-roles" href="/roles.html" class="nav-link text-sm font-medium text-slate-600 hover:text-brand-600 transition pt-2 pb-3 dark:text-slate-300 dark:hover:text-white">Roles</a>
+                        <a id="nav-plans" href="/plans.html" class="nav-link text-sm font-medium text-slate-600 hover:text-brand-600 transition pt-2 pb-3 dark:text-slate-300 dark:hover:text-white">Planes</a>
+                        <a href="/calculator/" class="nav-link active text-sm font-medium text-slate-600 hover:text-brand-600 transition pt-2 pb-3 dark:text-slate-300 dark:hover:text-white" aria-current="page">Lab</a>
+                    </div>
+                    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 mr-8"></div>
+                    <a id="nav-demo" href="/index.html#demo" class="px-6 py-2.5 bg-brand-600 rounded-full text-white text-sm font-semibold hover:bg-brand-500 hover:shadow-lg transition">Agendar Demo</a>
+
+                    <!-- Theme & Language Controls -->
+                    <div class="flex items-center gap-3 ml-4">
+                        <button id="navbar-theme-toggle" class="inline-flex items-center p-2 rounded-full bg-white/80 hover:bg-slate-100 border border-slate-200 dark:bg-slate-800 dark:border-slate-700 dark:hover:bg-slate-700 transition" aria-label="Toggle theme">
+                            <i id="navbar-theme-icon" class="fa-solid fa-moon text-sm text-slate-700 dark:text-yellow-300"></i>
+                        </button>
+                        <button id="navbar-lang-toggle" class="inline-flex items-center px-3 py-1 rounded-full bg-white border border-slate-200 text-sm font-semibold hover:bg-slate-100 dark:bg-slate-800 dark:border-slate-700 dark:text-white transition" aria-label="Toggle language">ES</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Button -->
+                <button id="mobile-menu-btn" class="md:hidden text-slate-700 hover:text-brand-600 p-2 dark:text-white">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="root" style="padding-top:68px;">
+      <!-- Loading splash (React lo reemplaza al montar) -->
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;">
+        <img src="/img/logo3.png" alt="Smart Student" style="width:80px;height:80px;animation:pulse 1.5s ease-in-out infinite;" />
+        <p style="color:#64748b;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;">Cargando...</p>
+      </div>
+    </div>
+
+    <script>
+    // Connect Tailwind navbar buttons to React's exposed toggles
+    document.addEventListener('DOMContentLoaded', () => {
+      const root = document.getElementById('root');
+      const themeBtn = document.getElementById('navbar-theme-toggle');
+      const langBtn = document.getElementById('navbar-lang-toggle');
+
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          if (root && root.__themeToggle) root.__themeToggle();
+        });
+      }
+      if (langBtn) {
+        langBtn.addEventListener('click', () => {
+          if (root && root.__langToggle) root.__langToggle();
+        });
+      }
+    });
+    </script>
+  </body>
+</html>

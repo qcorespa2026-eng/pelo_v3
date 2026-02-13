@@ -11,9 +11,9 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
-  SliderMark,
   Text,
   VStack,
+  Tooltip as ChakraTooltip,
   Input,
 } from '@chakra-ui/react';
 import {
@@ -424,8 +424,7 @@ const DropoutCalculator: React.FC = () => {
   const [enrollment, setEnrollment] = useState<number>(500);
   const [selectedPlan, setSelectedPlan] = useState<PlanKey>('profesional');
   const [showSliderTooltip, setShowSliderTooltip] = useState(false);
-  const [temporalidad, setTemporalidad] = useState<number>(1);
-  const [expanded, setExpanded] = useState(false);
+  const [temporalidad, setTemporalidad] = useState<number>(5);
   const ufValue = useUFValue();
 
   // Expose lang toggle to static navbar
@@ -435,9 +434,6 @@ const DropoutCalculator: React.FC = () => {
     const root = document.getElementById('root');
     if (root) (root as any).__langToggle = langToggle;
   }, [langToggle]);
-
-  // Expose expand toggle to static navbar
-  const expandToggle = useCallback(() => setExpanded((e) => !e), []);
 
   // Sync navbar with lang
   useEffect(() => {
@@ -517,11 +513,11 @@ const DropoutCalculator: React.FC = () => {
   const fmtUF = (value: number) =>
     value % 1 === 0 ? `${value} UF` : `${value.toFixed(3)} UF`;
 
-  // ROI Chart data (scaled by temporalidad)
+  // ROI Chart data
   const roiChartData = [
-    { name: t('roiLossLabel'), monto: roi.annualLoss * temporalidad, color: '#ef4444' },
-    { name: t('roiCostLabel'), monto: roi.annualCostCLP * temporalidad, color: '#22c55e' },
-    { name: t('roiSavingsLabel'), monto: roi.recovered * temporalidad, color: '#3b82f6' },
+    { name: t('roiLossLabel'), monto: roi.annualLoss, color: '#ef4444' },
+    { name: t('roiCostLabel'), monto: roi.annualCostCLP, color: '#22c55e' },
+    { name: t('roiSavingsLabel'), monto: roi.recovered, color: '#3b82f6' },
   ];
 
   const plans: { key: PlanKey; labelKey: string; subKey: string; color: string; isFeatured: boolean }[] = [
@@ -553,71 +549,42 @@ const DropoutCalculator: React.FC = () => {
           {t('subheadline')}
         </Text>
 
-        {/* ===== EXPAND / COLLAPSE TOGGLE ===== */}
-        <HStack justify="flex-end" mb={2}>
-          <Button
-            size="sm"
-            onClick={expandToggle}
-            rounded="full"
-            px={4}
-            bg={expanded ? (dark ? 'red.900' : 'red.50') : (dark ? 'green.900' : 'green.50')}
-            color={expanded ? (dark ? 'red.300' : 'red.600') : (dark ? 'green.300' : 'green.600')}
-            border="1px solid"
-            borderColor={expanded ? (dark ? 'red.700' : 'red.200') : (dark ? 'green.700' : 'green.200')}
-            _hover={{
-              bg: expanded ? (dark ? 'red.800' : 'red.100') : (dark ? 'green.800' : 'green.100'),
-              transform: 'translateY(-1px)',
-              boxShadow: 'sm',
-            }}
-            transition="all 0.2s ease"
-            leftIcon={<Icon as={expanded ? Zap : Sparkles} boxSize="14px" />}
-            fontWeight="700"
-            fontSize="12px"
-            letterSpacing="0.02em"
-          >
-            {expanded
-              ? (lang === 'es' ? 'Vista resumida' : 'Summary view')
-              : (lang === 'es' ? 'Ver análisis completo' : 'Full analysis')}
-          </Button>
-        </HStack>
-
-        {/* ===== ENROLLMENT + DIRECT COMPARISON (side by side) ===== */}
-        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={3} mb={5}>
-          {/* -- LEFT: Enrollment Input -- */}
-          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" p={{ base: 3, md: 4 }}
-            boxShadow={cardShadow} transition="all 0.3s ease" cursor="pointer"
-            _hover={{ transform: 'translateY(-4px)', boxShadow: dark ? '0 12px 30px -8px rgba(0,0,0,0.5)' : '0 12px 30px -8px rgba(15,23,42,0.18)', borderColor: dark ? 'gray.500' : 'blue.300' }}>
-            <HStack justify="space-between" mb={2} flexWrap="wrap" gap={2}>
-              <HStack spacing={2}>
-                <Box bg={dark ? 'blue.900' : 'blue.50'} p={1.5} rounded="lg">
-                  <Icon as={Users} boxSize="14px" color="blue.500" />
-                </Box>
-                <Box>
-                  <Text fontSize="13px" fontWeight="700" color={textPrimary}>{t('enrollment')}</Text>
-                  <Text fontSize="10px" color={textSecondary}>{getTierLabel(enrollment, lang)}</Text>
-                </Box>
-              </HStack>
-              <HStack spacing={2} align="center">
-                <Input
-                  type="number" value={enrollment} size="sm" rounded="lg" textAlign="center"
-                  maxW="90px" fontWeight="800" fontSize="md"
-                  bg={dark ? 'gray.700' : 'gray.50'} borderColor={dark ? 'gray.600' : 'blue.200'}
-                  color={textPrimary}
-                  _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3b82f6' }}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    if (v >= 1 && v <= 10000) setEnrollment(v);
-                    else if (v > 10000) setEnrollment(10000);
-                  }}
-                  min={1} max={10000}
-                />
-                <Text fontSize="xs" color={textSecondary} fontWeight="500">
-                  {lang === 'es' ? 'alumnos' : 'students'}
-                </Text>
-              </HStack>
+        {/* ===== ENROLLMENT INPUT (Slider + Number) ===== */}
+        <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" p={{ base: 4, md: 5 }}
+          boxShadow={cardShadow} mb={5} transition="all 0.3s ease">
+          <HStack justify="space-between" mb={3} flexWrap="wrap" gap={2}>
+            <HStack spacing={2}>
+              <Box bg={dark ? 'blue.900' : 'blue.50'} p={1.5} rounded="lg">
+                <Icon as={Users} boxSize="16px" color="blue.500" />
+              </Box>
+              <Box>
+                <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('enrollment')}</Text>
+                <Text fontSize="11px" color={textSecondary}>{getTierLabel(enrollment, lang)}</Text>
+              </Box>
             </HStack>
+            <HStack spacing={2} align="center">
+              <Input
+                type="number" value={enrollment} size="sm" rounded="lg" textAlign="center"
+                maxW="110px" fontWeight="800" fontSize="lg"
+                bg={dark ? 'gray.700' : 'gray.50'} borderColor={dark ? 'gray.600' : 'blue.200'}
+                color={textPrimary}
+                _focus={{ borderColor: 'blue.500', boxShadow: '0 0 0 1px #3b82f6' }}
+                onChange={(e) => {
+                  const v = Number(e.target.value);
+                  if (v >= 1 && v <= 10000) setEnrollment(v);
+                  else if (v > 10000) setEnrollment(10000);
+                }}
+                min={1} max={10000}
+              />
+              <Text fontSize="xs" color={textSecondary} fontWeight="500">
+                {lang === 'es' ? 'alumnos' : 'students'}
+              </Text>
+            </HStack>
+          </HStack>
 
-            <Box px={1}>
+          <Box px={1}>
+            <ChakraTooltip label={enrollment} isOpen={showSliderTooltip} placement="top" hasArrow
+              bg="blue.600" color="white" fontSize="xs" fontWeight="700" rounded="md" px={2} py={0.5}>
               <Slider
                 aria-label="enrollment-slider"
                 value={enrollment} min={50} max={5000} step={10}
@@ -629,180 +596,135 @@ const DropoutCalculator: React.FC = () => {
                 <SliderTrack bg={dark ? 'gray.600' : 'gray.200'} h="6px" rounded="full">
                   <SliderFilledTrack bg="blue.500" rounded="full" />
                 </SliderTrack>
-                {showSliderTooltip && (
-                  <SliderMark
-                    value={enrollment}
-                    textAlign="center"
-                    bg="blue.600"
-                    color="white"
-                    fontSize="xs"
-                    fontWeight="700"
-                    rounded="md"
-                    px={2}
-                    py={0.5}
-                    mt="-10"
-                    ml="-5"
-                    zIndex={10}
-                    pointerEvents="none"
-                  >
-                    {enrollment}
-                  </SliderMark>
-                )}
                 <SliderThumb boxSize="18px" bg="blue.600" border="2px solid white"
                   boxShadow="0 2px 6px rgba(37,99,235,0.4)"
                   _focus={{ boxShadow: '0 0 0 2px rgba(37,99,235,0.3)' }} />
               </Slider>
-            </Box>
-
-            <HStack mt={2} justify="flex-end">
-              <Text fontSize="10px" color={textSecondary}>
-                {t('ufNote')} ${ufValue.toLocaleString('es-CL')} CLP
-              </Text>
-            </HStack>
+            </ChakraTooltip>
           </Box>
 
-          {/* -- RIGHT: Direct Comparison -- */}
-          <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" px={{ base: 3, md: 4 }} py={{ base: 3, md: 4 }}
-            boxShadow={cardShadow} transition="all 0.3s ease" cursor="pointer"
-            _hover={{ transform: 'translateY(-2px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-            <Text fontSize="12px" fontWeight="700" mb={0.5} color={textPrimary}>{t('comparison')} ({temporalidad} {temporalidad === 1 ? (lang === 'es' ? 'año' : 'year') : (lang === 'es' ? 'años' : 'years')})</Text>
-            <Text fontSize="10px" color={textSecondary} mb={2}>{t('comparisonSub')}</Text>
-            <VStack spacing={2} align="stretch">
-              <CompareBar dark={dark} label={t('accLoss')} value={projectedLoss}
-                maxValue={projectedLoss} color="#f97316" format={fmtCLP} />
-              <CompareBar dark={dark} label={t('ssInvestment')} value={projectedInvestment}
-                maxValue={projectedLoss} color="#22c55e" format={fmtCLP} />
-            </VStack>
-            <HStack mt={2} p={1.5} bg={subtleBg} rounded="md" justify="space-between">
-              <Text fontSize="11px" color={textSecondary}>{t('returnRatio')}</Text>
-              <Badge colorScheme="green" fontSize="xs" px={1.5}>{ratio}x</Badge>
-            </HStack>
-          </Box>
-        </SimpleGrid>
-
-        {/* ===== PLAN SELECTOR + STAT CARDS SIDE BY SIDE ===== */}
-        <Text fontSize="14px" fontWeight="700" color={textPrimary} mb={2}>{t('selectPlan')}</Text>
-        <Box display={{ base: 'flex', md: 'grid' }} flexDirection="column"
-          gridTemplateColumns={{ md: expanded ? '1fr' : '1fr 1.2fr' }} gap={5} mb={5}>
-
-          {/* Plan cards (full width when expanded, left column when compact) */}
-          <SimpleGrid columns={{ base: 1, md: 3 }} spacing={2}>
-            {plans.map((plan) => {
-              const isSelected = selectedPlan === plan.key;
-              return (
-                <Box key={plan.key}
-                  bg={isSelected ? (dark ? 'gray.750' : 'white') : (dark ? 'gray.800' : 'gray.50')}
-                  border="2px solid"
-                  borderColor={isSelected ? plan.color : (dark ? 'gray.700' : 'gray.200')}
-                  rounded="xl" p={4} cursor="pointer" position="relative"
-                  transition="all 0.3s ease"
-                  display="flex" alignItems="center" justifyContent="center"
-                  boxShadow={isSelected ? `0 6px 20px -6px ${plan.color}30` : cardShadow}
-                  _hover={{
-                    transform: 'translateY(-3px)',
-                    borderColor: plan.color,
-                    boxShadow: `0 8px 24px -6px ${plan.color}25`,
-                  }}
-                  onClick={() => setSelectedPlan(plan.key)}
-                  role="radio" aria-checked={isSelected} tabIndex={0}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedPlan(plan.key); }}
-                >
-                  {plan.isFeatured && (
-                    <Badge position="absolute" top={-2} right={2}
-                      bg="blue.600" color="white" fontSize="8px" fontWeight="800"
-                      px={1.5} py={0.5} borderRadius="full" letterSpacing="0.05em">
-                      {t('popular')}
-                    </Badge>
-                  )}
-                  <Text fontSize="lg" fontWeight="900" color={plan.color} textAlign="center"
-                    letterSpacing="0.02em" textShadow={isSelected ? `0 0 20px ${plan.color}40` : 'none'}>
-                      {t(plan.labelKey)}
-                  </Text>
-                </Box>
-              );
-            })}
-          </SimpleGrid>
-
-          {/* RIGHT: 4 stat cards in 2x2 grid (only in compact mode) */}
-          {!expanded && <SimpleGrid columns={2} spacing={2}>
-            <HStack bg={dark ? 'gray.800' : 'white'} border="1px solid" borderColor={dark ? 'gray.700' : 'gray.200'}
-              rounded="lg" px={2.5} py={1.5} spacing={2} cursor="pointer" transition="all 0.3s ease"
-              boxShadow={dark ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 4px rgba(15,23,42,0.06)'}
-              _hover={{ transform: 'translateY(-3px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-              <Icon as={Users} boxSize="11px" color="orange.500" flexShrink={0} />
-              <Box>
-                <Text fontSize="9px" color={dark ? 'gray.400' : 'gray.500'} fontWeight="600" textTransform="uppercase" lineHeight="1">{t('atRisk')}</Text>
-                <Text fontSize="sm" fontWeight="800" color={dark ? 'gray.100' : 'gray.800'} lineHeight="1.3">{animStudentsLost}</Text>
-                <Text fontSize="9px" color={dark ? 'gray.500' : 'gray.400'} lineHeight="1">{t('studentsYear')}</Text>
-              </Box>
-            </HStack>
-            <HStack bg={dark ? 'gray.800' : 'white'} border="1px solid" borderColor={dark ? 'gray.700' : 'gray.200'}
-              rounded="lg" px={2.5} py={1.5} spacing={2} cursor="pointer" transition="all 0.3s ease"
-              boxShadow={dark ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 4px rgba(15,23,42,0.06)'}
-              _hover={{ transform: 'translateY(-3px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-              <Icon as={DollarSign} boxSize="11px" color="red.500" flexShrink={0} />
-              <Box>
-                <Text fontSize="9px" color={dark ? 'gray.400' : 'gray.500'} fontWeight="600" textTransform="uppercase" lineHeight="1">{t('annualLossLabel')}</Text>
-                <Text fontSize="sm" fontWeight="800" color={dark ? 'gray.100' : 'gray.800'} lineHeight="1.3">{fmtCLP(animAnnualLoss)}</Text>
-                <Text fontSize="9px" color={dark ? 'gray.500' : 'gray.400'} lineHeight="1">{t('subsidyLabel')}</Text>
-              </Box>
-            </HStack>
-            <HStack bg={dark ? 'gray.800' : 'white'} border="1px solid" borderColor={dark ? 'gray.700' : 'gray.200'}
-              rounded="lg" px={2.5} py={1.5} spacing={2} cursor="pointer" transition="all 0.3s ease"
-              boxShadow={dark ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 4px rgba(15,23,42,0.06)'}
-              _hover={{ transform: 'translateY(-3px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-              <Icon as={Calendar} boxSize="11px" color="orange.400" flexShrink={0} />
-              <Box>
-                <Text fontSize="9px" color={dark ? 'gray.400' : 'gray.500'} fontWeight="600" textTransform="uppercase" lineHeight="1">{t('projectedLoss')}</Text>
-                <Text fontSize="sm" fontWeight="800" color={dark ? 'gray.100' : 'gray.800'} lineHeight="1.3">{fmtCLP(animProjectedLoss)}</Text>
-                <Text fontSize="9px" color={dark ? 'gray.500' : 'gray.400'} lineHeight="1">{`${temporalidad} ${t('chartPeriod')} ${t('accumulated')}`}</Text>
-              </Box>
-            </HStack>
-            <HStack bg={dark ? 'gray.800' : 'white'} border="1px solid" borderColor={dark ? 'gray.700' : 'gray.200'}
-              rounded="lg" px={2.5} py={1.5} spacing={2} cursor="pointer" transition="all 0.3s ease"
-              boxShadow={dark ? '0 1px 4px rgba(0,0,0,0.2)' : '0 1px 4px rgba(15,23,42,0.06)'}
-              _hover={{ transform: 'translateY(-3px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
-              <Icon as={Zap} boxSize="11px" color="green.500" flexShrink={0} />
-              <Box>
-                <Text fontSize="9px" color={dark ? 'gray.400' : 'gray.500'} fontWeight="600" textTransform="uppercase" lineHeight="1">{t('ssSavings')}</Text>
-                <Text fontSize="sm" fontWeight="800" color={dark ? 'gray.100' : 'gray.800'} lineHeight="1.3">{fmtCLP(animSavings)}</Text>
-                <Text fontSize="9px" color={dark ? 'gray.500' : 'gray.400'} lineHeight="1">{`${temporalidad} ${t('chartPeriod')} ${t('potential')}`}</Text>
-              </Box>
-            </HStack>
-          </SimpleGrid>}
+          {/* UF reference note */}
+          <HStack mt={2} justify="flex-end">
+            <Text fontSize="10px" color={textSecondary}>
+              {t('ufNote')} ${ufValue.toLocaleString('es-CL')} CLP
+            </Text>
+          </HStack>
         </Box>
 
-        {/* ===== EXPANDED: TEMPORALIDAD SELECTOR + LARGE STAT CARDS ===== */}
-        {expanded && (
-          <Box mb={5}>
-            <HStack justify="flex-end" mb={2}>
-              <HStack spacing={0} bg={dark ? 'gray.700' : 'gray.100'} rounded="lg" p="2px">
-                {([1, 3, 5] as const).map((y) => (
-                  <Button key={y} size="xs" fontSize="12px" fontWeight={temporalidad === y ? '700' : '500'}
-                    bg={temporalidad === y ? (dark ? 'blue.600' : 'blue.500') : 'transparent'}
-                    color={temporalidad === y ? 'white' : (dark ? 'gray.300' : 'gray.600')}
-                    rounded="md" px={3} minW="auto"
-                    _hover={{ bg: temporalidad === y ? (dark ? 'blue.500' : 'blue.600') : (dark ? 'gray.600' : 'gray.200') }}
-                    onClick={() => setTemporalidad(y)}>
-                    {t(`year${y}` as keyof typeof i18n.es)}
-                  </Button>
-                ))}
-              </HStack>
-            </HStack>
-            <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3}>
-              <MiniCard dark={dark} icon={Users} iconColor="orange.500" label={t('atRisk')}
-                value={String(animStudentsLost)} sub={t('studentsYear')} />
-              <MiniCard dark={dark} icon={DollarSign} iconColor="red.500" label={t('annualLossLabel')}
-                value={fmtCLP(animAnnualLoss)} sub={t('subsidyLabel')} />
-              <MiniCard dark={dark} icon={Calendar} iconColor="orange.400" label={t('projectedLoss')}
-                value={fmtCLP(animProjectedLoss)} sub={`${temporalidad} ${t('chartPeriod')} ${t('accumulated')}`} />
-              <MiniCard dark={dark} icon={Zap} iconColor="green.500" label={t('ssSavings')}
-                value={fmtCLP(animSavings)} sub={`${temporalidad} ${t('chartPeriod')} ${t('potential')}`} />
-            </SimpleGrid>
-          </Box>
-        )}
+        {/* ===== PLAN SELECTOR TABS ===== */}
+        <Text fontSize="14px" fontWeight="700" color={textPrimary} mb={2}>{t('selectPlan')}</Text>
+        <SimpleGrid columns={{ base: 1, md: 3 }} spacing={3} mb={5}>
+          {plans.map((plan) => {
+            const isSelected = selectedPlan === plan.key;
+            const planPriceUF = pricing.allPlans[plan.key];
+            const needsQuote = planPriceUF === null;
+            const monthlyCost = needsQuote ? null : (planPriceUF! * enrollment);
 
-        {/* ===== MAIN CONTENT: Pricing + ROI Chart ===== */}
+            return (
+              <Box key={plan.key}
+                bg={isSelected ? (dark ? 'gray.750' : 'white') : (dark ? 'gray.800' : 'gray.50')}
+                border="2px solid"
+                borderColor={isSelected ? plan.color : (dark ? 'gray.700' : 'gray.200')}
+                rounded="xl" p={4} cursor="pointer" position="relative"
+                transition="all 0.3s ease"
+                boxShadow={isSelected
+                  ? `0 8px 30px -8px ${plan.color}30`
+                  : cardShadow}
+                _hover={{
+                  transform: 'translateY(-4px)',
+                  borderColor: plan.color,
+                  boxShadow: `0 12px 30px -8px ${plan.color}25`,
+                }}
+                onClick={() => setSelectedPlan(plan.key)}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={0}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedPlan(plan.key); }}
+              >
+                {/* Popular badge */}
+                {plan.isFeatured && (
+                  <Badge position="absolute" top={-2} right={3}
+                    bg="blue.600" color="white" fontSize="9px" fontWeight="800"
+                    px={1.5} py={0.5} borderRadius="full" letterSpacing="0.05em">
+                    {t('popular')}
+                  </Badge>
+                )}
+
+                {/* Radio indicator */}
+                <HStack spacing={2} mb={2}>
+                  <Box w="16px" h="16px" rounded="full" border="2px solid"
+                    borderColor={isSelected ? plan.color : (dark ? 'gray.500' : 'gray.300')}
+                    display="flex" alignItems="center" justifyContent="center" flexShrink={0}>
+                    {isSelected && (
+                      <Box w="8px" h="8px" rounded="full" bg={plan.color} />
+                    )}
+                  </Box>
+                  <Box>
+                    <Text fontSize="14px" fontWeight="800" color={isSelected ? plan.color : textPrimary}>
+                      {t(plan.labelKey)}
+                    </Text>
+                    <Text fontSize="11px" color={textSecondary} fontStyle="italic">
+                      ({t(plan.subKey)})
+                    </Text>
+                  </Box>
+                </HStack>
+
+                {/* Price display */}
+                {needsQuote ? (
+                  <Box mt={1} p={2} bg={dark ? 'purple.900' : 'purple.50'} rounded="lg" textAlign="center">
+                    <Text fontSize="md" fontWeight="800" color="purple.500">{t('cotizar')}</Text>
+                    <Text fontSize="10px" color={textSecondary}>{t('contactSales')}</Text>
+                  </Box>
+                ) : (
+                  <Box mt={1}>
+                    <HStack spacing={1} align="baseline">
+                      <Text fontSize="xl" fontWeight="900" color={isSelected ? plan.color : textPrimary}>
+                        {fmtUF(planPriceUF!)}
+                      </Text>
+                      <Text fontSize="11px" color={textSecondary}>{t('perStudentMonth')}</Text>
+                    </HStack>
+                    <Text fontSize="12px" color={textSecondary} mt={0.5}>
+                      {t('monthlyCost')}: <Text as="span" fontWeight="700" color={textPrimary}>{fmtUF(monthlyCost!)} {t('plusIva')}</Text>
+                    </Text>
+                    <Text fontSize="11px" color={textSecondary}>
+                      ≈ {fmtCLP(monthlyCost! * ufValue)} CLP / {lang === 'es' ? 'mes' : 'month'}
+                    </Text>
+                  </Box>
+                )}
+              </Box>
+            );
+          })}
+        </SimpleGrid>
+
+        {/* ===== STAT CARDS + TEMPORALIDAD ===== */}
+        <Box mb={5}>
+          <HStack justify="flex-end" mb={2}>
+            <HStack spacing={0} bg={dark ? 'gray.700' : 'gray.100'} rounded="lg" p="2px">
+              {([1, 3, 5] as const).map((y) => (
+                <Button key={y} size="xs" fontSize="12px" fontWeight={temporalidad === y ? '700' : '500'}
+                  bg={temporalidad === y ? (dark ? 'blue.600' : 'blue.500') : 'transparent'}
+                  color={temporalidad === y ? 'white' : (dark ? 'gray.300' : 'gray.600')}
+                  rounded="md" px={3} minW="auto"
+                  _hover={{ bg: temporalidad === y ? (dark ? 'blue.500' : 'blue.600') : (dark ? 'gray.600' : 'gray.200') }}
+                  onClick={() => setTemporalidad(y)}>
+                  {t(`year${y}` as keyof typeof i18n.es)}
+                </Button>
+              ))}
+            </HStack>
+          </HStack>
+          <SimpleGrid columns={{ base: 2, md: 4 }} spacing={3}>
+            <MiniCard dark={dark} icon={Users} iconColor="orange.500" label={t('atRisk')}
+              value={String(animStudentsLost)} sub={t('studentsYear')} />
+            <MiniCard dark={dark} icon={DollarSign} iconColor="red.500" label={t('annualLossLabel')}
+              value={fmtCLP(animAnnualLoss)} sub={t('subsidyLabel')} />
+            <MiniCard dark={dark} icon={Calendar} iconColor="orange.400" label={t('projectedLoss')}
+              value={fmtCLP(animProjectedLoss)} sub={`${temporalidad} ${t('chartPeriod')} ${t('accumulated')}`} />
+            <MiniCard dark={dark} icon={Zap} iconColor="green.500" label={t('ssSavings')}
+              value={fmtCLP(animSavings)} sub={`${temporalidad} ${t('chartPeriod')} ${t('potential')}`} />
+          </SimpleGrid>
+        </Box>
+
+        {/* ===== MAIN CONTENT: Card + Features / ROI ===== */}
         <Box display={{ base: 'flex', md: 'grid' }} flexDirection="column"
           gridTemplateColumns={{ md: '1fr 1.2fr' }}
           gap={5}>
@@ -812,13 +734,7 @@ const DropoutCalculator: React.FC = () => {
             const planColor = plans.find(p => p.key === selectedPlan)!.color;
             return (
           <Box bg={cardBg} border="2px solid" borderColor={planColor} rounded="xl" p={5}
-            boxShadow={`0 4px 20px -6px ${planColor}25`} transition="all 0.3s ease"
-            cursor="pointer"
-            _hover={{
-              transform: 'translateY(-4px)',
-              boxShadow: `0 12px 30px -8px ${planColor}40`,
-              borderColor: planColor,
-            }}>
+            boxShadow={`0 4px 20px -6px ${planColor}25`} transition="all 0.3s ease">
 
             {/* Summary numbers */}
             {!pricing.needsQuote ? (
@@ -887,7 +803,7 @@ const DropoutCalculator: React.FC = () => {
                 </HStack>
 
                 {/* ===== PRICING MATRIX TABLE (inline) ===== */}
-                {expanded && <Box overflowX="auto" mt={0}>
+                <Box overflowX="auto" mt={0}>
                   <HStack spacing={1.5} mb={2}>
                     <Icon as={BarChart3} boxSize="14px" color="blue.500" />
                     <Text fontSize="13px" fontWeight="700" color={textPrimary}>
@@ -943,7 +859,7 @@ const DropoutCalculator: React.FC = () => {
                       })}
                     </Box>
                   </Box>
-                </Box>}
+                </Box>
               </VStack>
             ) : (
               <VStack spacing={3} align="center" py={6}>
@@ -964,19 +880,63 @@ const DropoutCalculator: React.FC = () => {
             );
           })()}
 
-          {/* —— RIGHT: ROI Chart (always visible) + Features (expanded only) —— */}
+          {/* —— RIGHT: Features or ROI Chart —— */}
           <Box>
+            {/* Plan Features Card */}
+            {(() => {
+              const planColor = plans.find(p => p.key === selectedPlan)!.color;
+              return (
+            <Box bg={cardBg} border="2px solid" borderColor={planColor} rounded="xl" p={5}
+              boxShadow={`0 4px 20px -6px ${planColor}25`} mb={4}
+              transition="all 0.3s ease">
+              <HStack spacing={2} mb={3}>
+                <Icon as={BookOpen} boxSize="16px" color={planColor} />
+                <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('features')}</Text>
+                <Badge colorScheme={selectedPlan === 'basico' ? 'gray' : selectedPlan === 'profesional' ? 'blue' : 'purple'}
+                  fontSize="10px" px={1.5} borderRadius="full">
+                  {t(plans.find(p => p.key === selectedPlan)!.labelKey)}
+                </Badge>
+              </HStack>
+
+              <VStack spacing={2} align="stretch">
+                {PLAN_FEATURES[selectedPlan].map((feat) => (
+                  <HStack key={feat.key} spacing={2} p={2}
+                    bg={feat.type === 'disabled' ? (dark ? 'red.900' : 'red.50')
+                      : feat.type === 'highlight' ? (dark ? 'blue.900' : 'blue.50')
+                      : (dark ? 'gray.750' : 'gray.50')}
+                    rounded="lg"
+                    border="1px solid"
+                    borderColor={feat.type === 'disabled' ? (dark ? 'red.800' : 'red.100')
+                      : feat.type === 'highlight' ? (dark ? 'blue.800' : 'blue.100')
+                      : (dark ? 'gray.600' : 'gray.100')}
+                    transition="all 0.2s ease"
+                    _hover={{ transform: 'translateX(3px)' }}>
+                    <Icon as={feat.icon} boxSize="14px"
+                      color={feat.type === 'disabled' ? 'red.400'
+                        : feat.type === 'warn' ? (dark ? 'yellow.400' : 'yellow.600')
+                        : feat.type === 'highlight' ? 'blue.500'
+                        : 'green.500'} />
+                    <Text fontSize="12px"
+                      fontWeight={feat.type === 'highlight' ? '700' : '500'}
+                      color={feat.type === 'disabled' ? (dark ? 'red.300' : 'red.500')
+                        : textPrimary}
+                      textDecoration={feat.type === 'disabled' ? 'line-through' : 'none'}>
+                      {t(feat.key)}
+                    </Text>
+                    {feat.type === 'highlight' && (
+                      <Badge colorScheme="blue" fontSize="8px" variant="subtle" ml="auto">NEW</Badge>
+                    )}
+                  </HStack>
+                ))}
+              </VStack>
+            </Box>
+              );
+            })()}
+
             {/* ROI Chart - Always visible, recalculates per plan */}
             {!pricing.needsQuote && (
               <Box bg={cardBg} border="2px solid" borderColor={plans.find(p => p.key === selectedPlan)!.color} rounded="xl" p={5}
-                boxShadow={`0 4px 20px -6px ${plans.find(p => p.key === selectedPlan)!.color}25`} transition="all 0.3s ease"
-                mb={expanded ? 4 : 0}
-                cursor="pointer"
-                _hover={{
-                  transform: 'translateY(-4px)',
-                  boxShadow: `0 12px 30px -8px ${plans.find(p => p.key === selectedPlan)!.color}40`,
-                  borderColor: plans.find(p => p.key === selectedPlan)!.color,
-                }}>
+                boxShadow={`0 4px 20px -6px ${plans.find(p => p.key === selectedPlan)!.color}25`} transition="all 0.3s ease">
                 <HStack spacing={2} mb={1}>
                   <Icon as={TrendingUp} boxSize="16px" color="green.500" />
                   <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('roiTitle')}</Text>
@@ -1021,25 +981,25 @@ const DropoutCalculator: React.FC = () => {
                     border="1px solid" borderColor={dark ? 'red.800' : 'red.100'}>
                     <Text fontSize="10px" color="red.400" fontWeight="600">{t('roiLossLabel')}</Text>
                     <Text fontSize="xs" fontWeight="800" color={dark ? 'red.200' : 'red.600'}>
-                      {fmtCLP(roi.annualLoss * temporalidad)}
+                      {fmtCLP(roi.annualLoss)}
                     </Text>
                     <Text fontSize="9px" color={textSecondary}>
-                      {roi.studentsLost} {t('roiLossSub')} × {temporalidad} {t('chartPeriod')}
+                      {roi.studentsLost} {t('roiLossSub')}
                     </Text>
                   </Box>
                   <Box textAlign="center" p={1.5} bg={dark ? 'green.900' : 'green.50'} rounded="md"
                     border="1px solid" borderColor={dark ? 'green.800' : 'green.100'}>
                     <Text fontSize="10px" color="green.400" fontWeight="600">{t('roiCostLabel')}</Text>
                     <Text fontSize="xs" fontWeight="800" color={dark ? 'green.200' : 'green.600'}>
-                      {fmtCLP(roi.annualCostCLP * temporalidad)}
+                      {fmtCLP(roi.annualCostCLP)}
                     </Text>
-                    <Text fontSize="9px" color={textSecondary}>{temporalidad} {t('chartPeriod')}</Text>
+                    <Text fontSize="9px" color={textSecondary}>{lang === 'es' ? 'anual' : 'annual'}</Text>
                   </Box>
                   <Box textAlign="center" p={1.5} bg={dark ? 'blue.900' : 'blue.50'} rounded="md"
                     border="1px solid" borderColor={dark ? 'blue.800' : 'blue.100'}>
                     <Text fontSize="10px" color="blue.400" fontWeight="600">{t('roiSavingsLabel')}</Text>
                     <Text fontSize="xs" fontWeight="800" color={dark ? 'blue.200' : 'blue.600'}>
-                      {fmtCLP(roi.recovered * temporalidad)}
+                      {fmtCLP(roi.recovered)}
                     </Text>
                     <Text fontSize="9px" color={textSecondary}>50% {lang === 'es' ? 'retención' : 'retention'}</Text>
                   </Box>
@@ -1059,58 +1019,25 @@ const DropoutCalculator: React.FC = () => {
                 </Box>
               </Box>
             )}
-
-            {/* Plan Features Card - expanded only */}
-            {expanded && (() => {
-              const planColor = plans.find(p => p.key === selectedPlan)!.color;
-              return (
-                <Box bg={cardBg} border="2px solid" borderColor={planColor} rounded="xl" p={5}
-                  boxShadow={`0 4px 20px -6px ${planColor}25`} mt={4}
-                  transition="all 0.3s ease">
-                  <HStack spacing={2} mb={3}>
-                    <Icon as={BookOpen} boxSize="16px" color={planColor} />
-                    <Text fontSize="14px" fontWeight="700" color={textPrimary}>{t('features')}</Text>
-                    <Badge colorScheme={selectedPlan === 'basico' ? 'gray' : selectedPlan === 'profesional' ? 'blue' : 'purple'}
-                      fontSize="10px" px={1.5} borderRadius="full">
-                      {t(plans.find(p => p.key === selectedPlan)!.labelKey)}
-                    </Badge>
-                  </HStack>
-
-                  <VStack spacing={2} align="stretch">
-                    {PLAN_FEATURES[selectedPlan].map((feat) => (
-                      <HStack key={feat.key} spacing={2} p={2}
-                        bg={feat.type === 'disabled' ? (dark ? 'red.900' : 'red.50')
-                          : feat.type === 'highlight' ? (dark ? 'blue.900' : 'blue.50')
-                          : (dark ? 'gray.750' : 'gray.50')}
-                        rounded="lg"
-                        border="1px solid"
-                        borderColor={feat.type === 'disabled' ? (dark ? 'red.800' : 'red.100')
-                          : feat.type === 'highlight' ? (dark ? 'blue.800' : 'blue.100')
-                          : (dark ? 'gray.600' : 'gray.100')}
-                        transition="all 0.2s ease"
-                        _hover={{ transform: 'translateX(3px)' }}>
-                        <Icon as={feat.icon} boxSize="14px"
-                          color={feat.type === 'disabled' ? 'red.400'
-                            : feat.type === 'warn' ? (dark ? 'yellow.400' : 'yellow.600')
-                            : feat.type === 'highlight' ? 'blue.500'
-                            : 'green.500'} />
-                        <Text fontSize="12px"
-                          fontWeight={feat.type === 'highlight' ? '700' : '500'}
-                          color={feat.type === 'disabled' ? (dark ? 'red.300' : 'red.500')
-                            : textPrimary}
-                          textDecoration={feat.type === 'disabled' ? 'line-through' : 'none'}>
-                          {t(feat.key)}
-                        </Text>
-                        {feat.type === 'highlight' && (
-                          <Badge colorScheme="blue" fontSize="8px" variant="subtle" ml="auto">NEW</Badge>
-                        )}
-                      </HStack>
-                    ))}
-                  </VStack>
-                </Box>
-              );
-            })()}
           </Box>
+        </Box>
+
+        {/* ===== COMPARACIÓN DIRECTA ===== */}
+        <Box bg={cardBg} border="1px solid" borderColor={cardBorder} rounded="xl" px={{ base: 4, md: 5 }} py={{ base: 3, md: 4 }}
+          boxShadow={cardShadow} mt={5} transition="all 0.3s ease" cursor="pointer"
+          _hover={{ transform: 'translateY(-2px)', boxShadow: dark ? '0 6px 18px -4px rgba(0,0,0,0.4)' : '0 6px 18px -4px rgba(15,23,42,0.14)', borderColor: dark ? 'gray.600' : 'gray.300' }}>
+          <Text fontSize="13px" fontWeight="700" mb={0.5} color={textPrimary}>{t('comparison')}</Text>
+          <Text fontSize="11px" color={textSecondary} mb={2}>{t('comparisonSub')}</Text>
+          <VStack spacing={2} align="stretch">
+            <CompareBar dark={dark} label={t('accLoss')} value={projectedLoss}
+              maxValue={projectedLoss} color="#f97316" format={fmtCLP} />
+            <CompareBar dark={dark} label={t('ssInvestment')} value={projectedInvestment}
+              maxValue={projectedLoss} color="#22c55e" format={fmtCLP} />
+          </VStack>
+          <HStack mt={2} p={1.5} bg={subtleBg} rounded="md" justify="space-between">
+            <Text fontSize="11px" color={textSecondary}>{t('returnRatio')}</Text>
+            <Badge colorScheme="green" fontSize="xs" px={1.5}>{ratio}x</Badge>
+          </HStack>
         </Box>
 
         {/* ===== CTA HORIZONTAL ===== */}
