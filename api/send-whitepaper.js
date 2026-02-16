@@ -193,6 +193,7 @@ module.exports = async (req, res) => {
     }
 
     // Send lead notification (non-blocking, don't fail if this one fails)
+    let notifyStatus = 'skipped';
     try {
       const notifyRes = await fetch(MAILRELAY_API_URL, {
         method: 'POST',
@@ -200,6 +201,7 @@ module.exports = async (req, res) => {
         body: JSON.stringify(leadNotifyPayload)
       });
       const notifyText = await notifyRes.text();
+      notifyStatus = notifyRes.status;
       console.log('Lead notification email:', notifyRes.status, notifyText);
     } catch (notifyErr) {
       console.error('Lead notification failed (non-critical):', notifyErr.message);
@@ -216,7 +218,7 @@ module.exports = async (req, res) => {
       pdfUrl: WHITEPAPER_PDF_URL,
       timestamp,
       userEmailStatus: userRes.status,
-      notifyEmailStatus: notifyRes.status
+      notifyEmailStatus: notifyStatus
     }));
 
     return res.status(200).json({ ok: true });
