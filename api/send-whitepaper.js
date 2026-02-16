@@ -37,8 +37,8 @@ module.exports = async (req, res) => {
   // Pick the correct PDF based on language
   const isEnglish = lang === 'en';
   const WHITEPAPER_PDF_URL = isEnglish
-    ? (process.env.WHITEPAPER_PDF_URL_EN || 'https://smartstudent.io/Smart_Student_White_Paper_EN_2026.docx')
-    : (process.env.WHITEPAPER_PDF_URL_ES || 'https://smartstudent.io/Smart_Student_White_Paper_ES_2026.docx');
+    ? (process.env.WHITEPAPER_PDF_URL_EN || 'https://smartstudent.cl/Smart_Student_White_Paper_EN_2026.docx')
+    : (process.env.WHITEPAPER_PDF_URL_ES || 'https://smartstudent.cl/Smart_Student_White_Paper_ES_2026.docx');
 
   if (!MAILRELAY_API_KEY) {
     console.error('Missing MAILRELAY_API_KEY');
