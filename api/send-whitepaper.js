@@ -55,12 +55,12 @@ module.exports = async (req, res) => {
     btnText: '📄 Download Whitepaper',
     boxTitle: 'What will you find in this whitepaper?',
     bullets: [
-      'Updated chronic absenteeism statistics in Chile',
+      'Updated chronic absenteeism statistics',
       'How AI predicts at-risk students up to 3 months in advance',
       'Step-by-step intervention protocols',
       'Real case: 23% dropout reduction in one semester'
     ],
-    closing: `If you have questions or want a personalized demo for <strong>${institution}</strong>, feel free to reply to this email or <a href="https://smartstudent.io/#demo" style="color:#2563eb;text-decoration:none;font-weight:bold;">schedule a demo here</a>.`,
+    closing: `If you have questions or want a personalized demo for <strong>${institution}</strong>, feel free to reply to this email or <a href="https://smartstudent.cl/#demo" style="color:#2563eb;text-decoration:none;font-weight:bold;">schedule a demo here</a>.`,
     platformName: 'AI-Powered School Management Platform',
     textFallback: `Hi ${name}, thank you for downloading our whitepaper on school absenteeism. Download it here: ${WHITEPAPER_PDF_URL}`
   } : {
@@ -70,12 +70,12 @@ module.exports = async (req, res) => {
     btnText: '📄 Descargar Whitepaper',
     boxTitle: '¿Qué encontrarás en este whitepaper?',
     bullets: [
-      'Datos actualizados de ausentismo crónico en Chile',
+      'Datos actualizados de ausentismo crónico',
       'Cómo la IA predice alumnos en riesgo hasta 3 meses antes',
       'Protocolos de intervención paso a paso',
       'Caso real: reducción del 23% en deserción en un semestre'
     ],
-    closing: `Si tienes preguntas o quieres ver una demo personalizada para <strong>${institution}</strong>, no dudes en responder este correo o <a href="https://smartstudent.io/#demo" style="color:#2563eb;text-decoration:none;font-weight:bold;">agendar una demo aquí</a>.`,
+    closing: `Si tienes preguntas o quieres ver una demo personalizada para <strong>${institution}</strong>, no dudes en responder este correo o <a href="https://smartstudent.cl/#demo" style="color:#2563eb;text-decoration:none;font-weight:bold;">agendar una demo aquí</a>.`,
     platformName: 'Plataforma de Gestión Escolar con IA',
     textFallback: `Hola ${name}, gracias por descargar nuestro whitepaper sobre ausentismo escolar. Descárgalo aquí: ${WHITEPAPER_PDF_URL}`
   };
@@ -92,6 +92,7 @@ module.exports = async (req, res) => {
       <body style="margin:0;padding:0;background:#f4f6fa;font-family:'Helvetica Neue',Arial,sans-serif;">
         <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;margin-top:20px;margin-bottom:20px;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
           <div style="background:linear-gradient(135deg,#1e3a5f 0%,#2563eb 100%);padding:40px 30px;text-align:center;">
+            <img src="https://smartstudent.cl/img/logo3.png" alt="Smart Student" width="60" height="60" style="display:block;margin:0 auto 12px auto;border-radius:12px;">
             <h1 style="color:#ffffff;font-size:24px;margin:0 0 8px 0;">Smart Student</h1>
             <p style="color:rgba(255,255,255,0.7);font-size:14px;margin:0;">${emailContent.platformName}</p>
           </div>
@@ -113,8 +114,8 @@ module.exports = async (req, res) => {
           </div>
           <div style="background:#f8fafc;padding:24px 30px;text-align:center;border-top:1px solid #e5e7eb;">
             <p style="color:#9ca3af;font-size:12px;margin:0;">
-              &copy; 2026 Smart Student Inc. &middot; Santiago, Chile<br>
-              <a href="https://smartstudent.io" style="color:#6b7280;text-decoration:none;">smartstudent.io</a>
+              &copy; 2026 Smart Student Inc.<br>
+              <a href="https://smartstudent.cl" style="color:#6b7280;text-decoration:none;">smartstudent.cl</a>
             </p>
           </div>
         </div>
