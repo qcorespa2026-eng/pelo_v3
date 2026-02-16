@@ -169,31 +169,40 @@ module.exports = async (req, res) => {
 
   try {
     // Send both emails concurrently
-    const [userRes, notifyRes] = await Promise.all([
-      fetch(MAILRELAY_API_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(userEmailPayload)
-      }),
-      fetch(MAILRELAY_API_URL, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(leadNotifyPayload)
-      })
-    ]);
+    // Send whitepaper to user first
+    const userRes = await fetch(MAILRELAY_API_URL, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(userEmailPayload)
+    });
 
     const userText = await userRes.text();
-    const notifyText = await notifyRes.text();
-
     console.log('Whitepaper email to user:', userRes.status, userText);
-    console.log('Lead notification email:', notifyRes.status, notifyText);
 
     if (!userRes.ok) {
       console.error('Failed to send whitepaper to user:', userRes.status, userText);
+      // Try to extract Mailrelay error detail for logging
+      let detail = '';
+      try { detail = JSON.stringify(JSON.parse(userText)); } catch (_) { detail = userText; }
+      console.error('Mailrelay detail:', detail);
+
       const errMsg = isEnglish
-        ? 'Could not send the whitepaper. Please try again.'
-        : 'No se pudo enviar el whitepaper. Inténtalo de nuevo.';
+        ? 'Could not send the email. Please try again or contact us.'
+        : 'No se pudo enviar el correo. Inténtalo de nuevo o contáctanos.';
       return res.status(502).json({ error: errMsg });
+    }
+
+    // Send lead notification (non-blocking, don't fail if this one fails)
+    try {
+      const notifyRes = await fetch(MAILRELAY_API_URL, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(leadNotifyPayload)
+      });
+      const notifyText = await notifyRes.text();
+      console.log('Lead notification email:', notifyRes.status, notifyText);
+    } catch (notifyErr) {
+      console.error('Lead notification failed (non-critical):', notifyErr.message);
     }
 
     // Log the lead
