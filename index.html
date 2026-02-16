@@ -69,50 +69,42 @@
         "mainEntity": [
             {
                 "@type": "Question",
-                "name": "¿Es Smart Student válido para la Circular 30 del MINEDUC?",
+                "name": "¿Cuáles son los protocolos de seguridad y dominios oficiales para la comunicación de soporte técnico?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Sí, nuestro libro de clases digital cumple 100% con la normativa de la Circular 30 del MINEDUC. Smart Student genera todos los reportes exigidos y garantiza interoperabilidad con el SIGE para carga masiva de datos."
+                    "text": "Implementamos estrictos protocolos de seguridad de la capa de transporte (TLS) y autenticación de remitentes mediante registros SPF, DKIM y DMARC. Toda comunicación oficial de Smart Student se emitirá exclusivamente desde el dominio corporativo smartstudent.cl o subdominios autorizados. Cualquier discrepancia en el encabezado del mensaje (header) debe ser reportada como un potencial vector de phishing."
                 }
             },
             {
                 "@type": "Question",
-                "name": "¿Cómo funciona la predicción de deserción escolar con IA?",
+                "name": "¿Cómo opera el modelo predictivo de analítica avanzada para el resguardo de trayectorias educativas?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Nuestros algoritmos de Inteligencia Artificial analizan patrones de asistencia, calificaciones, historial de pagos y factores socioeconómicos para predecir alumnos en riesgo de deserción escolar. El sistema genera alertas tempranas para intervenir antes de que el alumno abandone."
+                    "text": "Nuestra plataforma utiliza algoritmos de Machine Learning basados en redes neuronales y modelos de regresión logística para procesar KPIs multivariables (asistencia, rendimiento académico y variables socioemocionales). El sistema genera un score de riesgo preventivo, permitiendo a los equipos directivos ejecutar estrategias de intervención temprana basadas en datos (Data-Driven Decision Making) antes de que se consolide una desvinculación escolar."
                 }
             },
             {
                 "@type": "Question",
-                "name": "¿El software se conecta con el SIGE?",
+                "name": "¿Cómo garantiza la plataforma la integridad de los datos y el cumplimiento de estándares internacionales de gestión escolar (SIS)?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Sí, garantizamos interoperabilidad total con el SIGE (Sistema de Información General de Estudiantes). Smart Student permite la carga masiva de datos de matrícula, asistencia y calificaciones."
+                    "text": "Smart Student actúa como un Sistema de Información Estudiantil (SIS) integral que garantiza la inmutabilidad de los registros mediante logs de auditoría técnica. El Libro Digital está diseñado bajo una arquitectura de microservicios, asegurando alta disponibilidad y sincronización en tiempo real con las bases de datos centrales, cumpliendo con los estándares de interoperabilidad técnica y seguridad de la información."
                 }
             },
             {
                 "@type": "Question",
-                "name": "¿Cómo ayuda Smart Student a aumentar la asistencia media del colegio?",
+                "name": "¿Qué arquitectura ofrece Smart Student para el soporte de metodologías de Aprendizaje Basado en Proyectos (ABP)?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Smart Student monitorea la asistencia en tiempo real y envía alertas automáticas a apoderados vía app y WhatsApp. Nuestra calculadora de subvención escolar permite visualizar el impacto económico de cada punto de asistencia."
+                    "text": "Contamos con un módulo especializado para la gestión del ciclo de vida de proyectos educativos. La arquitectura permite la colaboración asíncrona, el seguimiento de hitos mediante diagramas de Gantt dinámicos y la evaluación por competencias mediante rúbricas digitales personalizables, alineadas con marcos metodológicos internacionales de innovación pedagógica."
                 }
             },
             {
                 "@type": "Question",
-                "name": "¿Smart Student genera pruebas y evaluaciones con Inteligencia Artificial?",
+                "name": "¿Cuál es la propuesta de valor de un ecosistema digital propietario frente a plataformas de terceros?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Sí, nuestro generador de pruebas con Inteligencia Artificial permite crear evaluaciones alineadas al currículum nacional en minutos, con rúbricas automáticas y planificación curricular automática integrada."
-                }
-            },
-            {
-                "@type": "Question",
-                "name": "¿Cuánto cuesta Smart Student para mi colegio?",
-                "acceptedAnswer": {
-                    "@type": "Answer",
-                    "text": "Nuestros planes son transparentes y se cobran por alumno matriculado. Ofrecemos planes desde instituciones pequeñas hasta redes de colegios. Puede cotizar en línea o agendar una demo gratuita."
+                    "text": "A diferencia de las redes sociales convencionales, nuestra plataforma ofrece un entorno de Marca Blanca (White Label) con optimización de búsqueda (SEO) avanzada y control total sobre el gobierno de datos. Al centralizar la operación en una arquitectura web propia, la institución garantiza la privacidad del usuario, evita la dispersión de la información y profesionaliza el embudo de conversión y comunicación con la comunidad educativa."
                 }
             }
         ]
@@ -989,73 +981,62 @@
             <div class="text-center mb-16 reveal">
                 <h2 class="text-base text-brand-600 font-bold tracking-wide uppercase mb-2">Preguntas Frecuentes</h2>
                 <h3 class="text-3xl lg:text-4xl font-bold text-slate-900 dark:text-white mb-4">Todo lo que necesita saber sobre Smart Student</h3>
-                <p class="text-lg text-slate-500 dark:text-slate-400">Resolvemos las dudas más comunes de colegios y sostenedores en Chile.</p>
+                <p class="text-lg text-slate-500 dark:text-slate-400">Resolvemos las consultas técnicas más frecuentes de instituciones educativas y sostenedores.</p>
             </div>
 
             <div class="space-y-4" x-data="{ open: null }">
-                <!-- FAQ 1 -->
+                <!-- FAQ 1: Seguridad y Autenticidad -->
                 <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
                     <button @click="open = open === 1 ? null : 1" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Es Smart Student válido para la Circular 30 del MINEDUC?</span>
+                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cuáles son los protocolos de seguridad y dominios oficiales para la comunicación de soporte técnico?</span>
                         <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 1 ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open === 1" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Sí, nuestro <strong>libro de clases digital</strong> cumple 100% con la normativa de la Circular 30 del MINEDUC. Smart Student está diseñado para generar todos los reportes exigidos, incluyendo actas de calificaciones, certificados anuales y registros de asistencia homologados. Además, garantizamos la <strong>interoperabilidad con el SIGE</strong> para carga masiva de datos.</p>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Implementamos estrictos protocolos de <strong>seguridad de la capa de transporte (TLS)</strong> y autenticación de remitentes mediante registros <strong>SPF, DKIM y DMARC</strong>. Toda comunicación oficial de Smart Student se emitirá exclusivamente desde el dominio corporativo <strong>smartstudent.cl</strong> o subdominios autorizados. Cualquier discrepancia en el encabezado del mensaje (header) debe ser reportada como un potencial vector de phishing.</p>
                     </div>
                 </div>
 
-                <!-- FAQ 2 -->
+                <!-- FAQ 2: Prevención de la Deserción (IA) -->
                 <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
                     <button @click="open = open === 2 ? null : 2" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cómo funciona la predicción de deserción escolar con IA?</span>
+                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cómo opera el modelo predictivo de analítica avanzada para el resguardo de trayectorias educativas?</span>
                         <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 2 ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open === 2" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Nuestros algoritmos de <strong>Inteligencia Artificial</strong> analizan patrones de asistencia, calificaciones, historial de pagos y factores socioeconómicos para <strong>predecir alumnos en riesgo de deserción escolar</strong>. El sistema genera alertas tempranas que permiten intervenir antes de que el alumno abandone, ayudando a <strong>reducir el ausentismo crónico</strong> y recuperar matrícula.</p>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Nuestra plataforma utiliza algoritmos de <strong>Machine Learning</strong> basados en redes neuronales y modelos de regresión logística para procesar <strong>KPIs multivariables</strong> (asistencia, rendimiento académico y variables socioemocionales). El sistema genera un <strong>score de riesgo preventivo</strong>, permitiendo a los equipos directivos ejecutar estrategias de intervención temprana basadas en datos (<strong>Data-Driven Decision Making</strong>) antes de que se consolide una desvinculación escolar.</p>
                     </div>
                 </div>
 
-                <!-- FAQ 3 -->
+                <!-- FAQ 3: Gestión y Libro Digital (SIS) -->
                 <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
                     <button @click="open = open === 3 ? null : 3" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿El software se conecta con el SIGE?</span>
+                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cómo garantiza la plataforma la integridad de los datos y el cumplimiento de estándares internacionales de gestión escolar (SIS)?</span>
                         <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 3 ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open === 3" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Sí, garantizamos <strong>interoperabilidad total con el SIGE</strong> (Sistema de Información General de Estudiantes). Smart Student permite la carga masiva de datos de matrícula, asistencia y calificaciones, eliminando la doble digitación y asegurando que su colegio cumpla con los plazos normativos del MINEDUC.</p>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Smart Student actúa como un <strong>Sistema de Información Estudiantil (SIS)</strong> integral que garantiza la inmutabilidad de los registros mediante <strong>logs de auditoría técnica</strong>. El Libro Digital está diseñado bajo una <strong>arquitectura de microservicios</strong>, asegurando alta disponibilidad y sincronización en tiempo real con las bases de datos centrales, cumpliendo con los estándares de interoperabilidad técnica y seguridad de la información.</p>
                     </div>
                 </div>
 
-                <!-- FAQ 4 -->
+                <!-- FAQ 4: Metodología ABP -->
                 <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
                     <button @click="open = open === 4 ? null : 4" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cómo ayuda Smart Student a aumentar la asistencia media del colegio?</span>
+                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Qué arquitectura ofrece Smart Student para el soporte de metodologías de Aprendizaje Basado en Proyectos (ABP)?</span>
                         <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 4 ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open === 4" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Smart Student monitorea la asistencia en tiempo real y envía <strong>alertas automáticas a apoderados</strong> vía app y WhatsApp cuando un alumno acumula inasistencias. Además, nuestra <strong>calculadora de subvención escolar</strong> permite visualizar el impacto económico directo de cada punto de asistencia, motivando la acción preventiva del equipo directivo.</p>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Contamos con un <strong>módulo especializado</strong> para la gestión del ciclo de vida de proyectos educativos. La arquitectura permite la <strong>colaboración asíncrona</strong>, el seguimiento de hitos mediante <strong>diagramas de Gantt dinámicos</strong> y la evaluación por competencias mediante <strong>rúbricas digitales personalizables</strong>, alineadas con marcos metodológicos internacionales de innovación pedagógica.</p>
                     </div>
                 </div>
 
-                <!-- FAQ 5 -->
+                <!-- FAQ 5: Ecosistema Digital Propietario -->
                 <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
                     <button @click="open = open === 5 ? null : 5" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Smart Student genera pruebas y evaluaciones con Inteligencia Artificial?</span>
+                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cuál es la propuesta de valor de un ecosistema digital propietario frente a plataformas de terceros?</span>
                         <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 5 ? 'rotate-180' : ''"></i>
                     </button>
                     <div x-show="open === 5" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Sí, nuestro <strong>generador de pruebas con Inteligencia Artificial</strong> permite crear evaluaciones alineadas al currículum nacional en minutos. Los profesores pueden generar preguntas de desarrollo, selección múltiple y verdadero/falso, con rúbricas automáticas y <strong>planificación curricular automática</strong> integrada.</p>
-                    </div>
-                </div>
-
-                <!-- FAQ 6 -->
-                <div class="bg-slate-50 dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden reveal">
-                    <button @click="open = open === 6 ? null : 6" class="w-full flex items-center justify-between px-6 py-5 text-left">
-                        <span class="font-semibold text-slate-900 dark:text-white text-lg">¿Cuánto cuesta Smart Student para mi colegio?</span>
-                        <i class="fa-solid fa-chevron-down text-brand-600 transition-transform duration-300" :class="open === 6 ? 'rotate-180' : ''"></i>
-                    </button>
-                    <div x-show="open === 6" x-collapse class="px-6 pb-5">
-                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">Nuestros planes son transparentes y se cobran <strong>por alumno matriculado</strong>. Ofrecemos planes desde instituciones pequeñas hasta redes de colegios. Puede <a href="plans.html" class="text-brand-600 font-semibold hover:underline">cotizar en línea</a> o <a href="#demo" class="text-brand-600 font-semibold hover:underline">agendar una demo gratuita</a> para conocer el plan que mejor se adapte a su establecimiento.</p>
+                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">A diferencia de las redes sociales convencionales, nuestra plataforma ofrece un entorno de <strong>Marca Blanca (White Label)</strong> con optimización de búsqueda <strong>(SEO) avanzada</strong> y control total sobre el gobierno de datos. Al centralizar la operación en una <strong>arquitectura web propia</strong>, la institución garantiza la privacidad del usuario, evita la dispersión de la información y profesionaliza el embudo de conversión y comunicación con la comunidad educativa.</p>
                     </div>
                 </div>
             </div>
