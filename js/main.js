@@ -793,6 +793,17 @@ async function sendDemoRequest() {
   btn.innerHTML = 'Enviando...';
 
   try {
+    // Retrieve calculator data from localStorage (if visitor used the calculator)
+    let calcInfo = '';
+    try {
+      const raw = localStorage.getItem('ss_calculator');
+      if (raw) {
+        const c = JSON.parse(raw);
+        const planNames = { basico: 'Básico', profesional: 'Profesional', institucional: 'Institucional' };
+        calcInfo = `\n\n📊 Datos de Calculadora:\n  • Matrícula: ${c.enrollment} alumnos\n  • Plan: ${planNames[c.plan] || c.plan}\n  • Temporalidad: ${c.temporalidad} año(s)\n  • Última actualización: ${c.updatedAt || '—'}`;
+      }
+    } catch (_) { /* ignore parse errors */ }
+
     // Using Web3Forms - free service for jorge.castro@smartstudent.cl
     const res = await fetch('https://api.web3forms.com/submit', {
       method: 'POST',
@@ -802,7 +813,7 @@ async function sendDemoRequest() {
         subject: '🎓 Nueva solicitud de Demo - Smart Student',
         from_name: 'Smart Student Web',
         email: email,
-        message: `Se ha recibido una nueva solicitud de demo.\n\nCorreo del interesado: ${email}\nFecha: ${new Date().toLocaleString('es-CL')}`
+        message: `Se ha recibido una nueva solicitud de demo.\n\nCorreo del interesado: ${email}\nFecha: ${new Date().toLocaleString('es-CL')}${calcInfo}`
       })
     });
 

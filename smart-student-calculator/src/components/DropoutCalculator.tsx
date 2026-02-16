@@ -453,6 +453,68 @@ const DropoutCalculator: React.FC = () => {
     });
   }, [lang, t]);
 
+  // ── Persist calculator data to localStorage ──
+  useEffect(() => {
+    const data = {
+      enrollment,
+      plan: selectedPlan,
+      temporalidad,
+      updatedAt: new Date().toISOString(),
+    };
+    try { localStorage.setItem('ss_calculator', JSON.stringify(data)); } catch { /* quota */ }
+  }, [enrollment, selectedPlan, temporalidad]);
+
+  // ── Google Sheet URL (Apps Script web app) ──
+  const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwgqcAmZzXCtuEhG_SAnf7x4-Y1iKpr9MbIIJOLPnJeToU0zvTV0TE9D_wASpDx_X6jJw/exec';
+
+  // ── Send calculator data to Google Sheet + Vercel API ──
+  const sendCalculatorData = useCallback(async () => {
+    try {
+      const priceUF = getPriceUF(enrollment, selectedPlan);
+      const monthlyUF = priceUF * enrollment;
+      const annualUF = monthlyUF * 12;
+      const studentsLost = Math.ceil(enrollment * DROPOUT_RATE);
+      const annualLoss = studentsLost * ANNUAL_SUBSIDY_PER_STUDENT;
+      const annualCostCLP = annualUF * ufValue;
+      const projectedSavings = Math.max(0, (annualLoss - annualCostCLP) * temporalidad);
+      const ratioVal = annualCostCLP > 0 ? (annualLoss / annualCostCLP).toFixed(1) : '∞';
+
+      const payload = {
+        enrollment,
+        plan: selectedPlan,
+        temporalidad,
+        unitPriceUF: priceUF.toFixed(3),
+        monthlyUF: monthlyUF.toFixed(2),
+        annualUF: annualUF.toFixed(2),
+        monthlyCLP: Math.round(monthlyUF * ufValue),
+        annualCLP: Math.round(annualCostCLP),
+        studentsAtRisk: studentsLost,
+        annualLoss,
+        projectedSavings: Math.round(projectedSavings),
+        roi: ratioVal,
+        lang,
+        timestamp: new Date().toLocaleString('es-CL', { timeZone: 'America/Santiago' }),
+        userAgent: navigator.userAgent,
+        referrer: document.referrer || window.location.href,
+      };
+
+      // 1. Google Sheet (direct from browser — no-cors to avoid preflight)
+      fetch(GOOGLE_SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
+      }).catch(() => { /* non-blocking */ });
+
+      // 2. Vercel API (email notification)
+      fetch('/api/save-calculator', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => { /* non-blocking */ });
+    } catch { /* non-blocking */ }
+  }, [enrollment, selectedPlan, temporalidad, ufValue, lang]);
+
   // Theme-aware styles
   const cardBg = dark ? 'gray.800' : 'white';
   const cardBorder = dark ? 'gray.700' : 'gray.200';
@@ -948,7 +1010,8 @@ const DropoutCalculator: React.FC = () => {
                         : 'For 3,000+ students, contact us for a custom rate.'}
                     </Text>
                     <Button as="a" href="/index.html#demo" bg="purple.600" color="white" rounded="lg" px={6} size="sm"
-                      _hover={{ bg: 'purple.500', transform: 'translateY(-2px)' }}>
+                      _hover={{ bg: 'purple.500', transform: 'translateY(-2px)' }}
+                      onClick={() => { sendCalculatorData(); }}>
                       {t('contactSales')}
                     </Button>
                   </Box>
@@ -1150,7 +1213,8 @@ const DropoutCalculator: React.FC = () => {
             _hover={{ transform: 'scale(1.05)', boxShadow: '0 6px 20px rgba(0,0,0,0.2)', bg: 'gray.50' }}
             px={8} minW="200px" fontSize="xs" fontWeight="800" rounded="lg"
             transition="all 0.3s ease"
-            boxShadow="0 4px 15px rgba(0,0,0,0.15)">
+            boxShadow="0 4px 15px rgba(0,0,0,0.15)"
+            onClick={() => { sendCalculatorData(); }}>
             {t('ctaBtn')}
           </Button>
         </HStack>
