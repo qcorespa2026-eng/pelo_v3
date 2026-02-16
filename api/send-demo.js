@@ -19,7 +19,7 @@ module.exports = async (req, res) => {
 
   const MAILRELAY_API_KEY = process.env.MAILRELAY_API_KEY;
   const MAILRELAY_ACCOUNT = process.env.MAILRELAY_ACCOUNT || 'smartstudent';
-  const FROM_EMAIL = process.env.FROM_EMAIL || 'no-reply@smartstudent.site';
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'notificaciones@smartstudent.cl';
 
   if (!MAILRELAY_API_KEY) {
     console.error('Missing MAILRELAY_API_KEY');
