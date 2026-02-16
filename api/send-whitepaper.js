@@ -157,7 +157,7 @@ module.exports = async (req, res) => {
           <td style="padding:10px;color:#4b5563;">${timestamp}</td>
         </tr>
       </table>
-      <p style="margin-top:20px;color:#6b7280;font-size:13px;">Fuente: Landing Page /whitepaper-absentismo</p>
+      <p style="margin-top:20px;color:#6b7280;font-size:13px;">Fuente: Landing Page /whitepaper</p>
     `,
     text_part: `Nuevo lead Whitepaper:\nNombre: ${name}\nEmail: ${email}\nInstitución: ${institution}\nCargo: ${role}\nIdioma: ${isEnglish ? 'EN' : 'ES'}\nFecha: ${timestamp}`
   };
