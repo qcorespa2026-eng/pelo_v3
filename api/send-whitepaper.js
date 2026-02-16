@@ -5,8 +5,8 @@
 // - MAILRELAY_API_KEY          (required) Your Mailrelay API key
 // - MAILRELAY_ACCOUNT          (optional) Mailrelay account subdomain (default: "smartstudent")
 // - FROM_EMAIL                 (optional) Sender email (default: "no-reply@smartstudent.site")
-// - WHITEPAPER_PDF_URL_ES      (required) Public URL of the Spanish whitepaper PDF
-// - WHITEPAPER_PDF_URL_EN      (required) Public URL of the English whitepaper PDF
+// - WHITEPAPER_PDF_URL_ES      (optional) Public URL of the Spanish whitepaper (default: /Smart_Student_White_Paper_ES_2026.docx)
+// - WHITEPAPER_PDF_URL_EN      (optional) Public URL of the English whitepaper (default: /Smart_Student_White_Paper_EN_2026.docx)
 // - LEAD_NOTIFY_EMAIL          (optional) Email to receive lead notifications (default: "jorge.castro@smartstudent.cl")
 
 module.exports = async (req, res) => {
@@ -37,8 +37,8 @@ module.exports = async (req, res) => {
   // Pick the correct PDF based on language
   const isEnglish = lang === 'en';
   const WHITEPAPER_PDF_URL = isEnglish
-    ? (process.env.WHITEPAPER_PDF_URL_EN || 'https://smartstudent.io/docs/whitepaper-school-absenteeism-ai.pdf')
-    : (process.env.WHITEPAPER_PDF_URL_ES || 'https://smartstudent.io/docs/whitepaper-ausentismo-escolar-ia.pdf');
+    ? (process.env.WHITEPAPER_PDF_URL_EN || 'https://smartstudent.io/Smart_Student_White_Paper_EN_2026.docx')
+    : (process.env.WHITEPAPER_PDF_URL_ES || 'https://smartstudent.io/Smart_Student_White_Paper_ES_2026.docx');
 
   if (!MAILRELAY_API_KEY) {
     console.error('Missing MAILRELAY_API_KEY');
@@ -52,7 +52,7 @@ module.exports = async (req, res) => {
     subject: 'Your Whitepaper: How to Reduce School Absenteeism with AI',
     greeting: `Hi ${name}! 👋`,
     intro: 'Thank you for your interest in our whitepaper on school absenteeism. Here is your free copy:',
-    btnText: '📄 Download Whitepaper (PDF)',
+    btnText: '📄 Download Whitepaper',
     boxTitle: 'What will you find in this whitepaper?',
     bullets: [
       'Updated chronic absenteeism statistics in Chile',
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
     subject: 'Tu Whitepaper: Cómo Reducir el Ausentismo Escolar con IA',
     greeting: `¡Hola ${name}! 👋`,
     intro: 'Gracias por tu interés en nuestro whitepaper sobre ausentismo escolar. Aquí tienes tu copia gratuita:',
-    btnText: '📄 Descargar Whitepaper (PDF)',
+    btnText: '📄 Descargar Whitepaper',
     boxTitle: '¿Qué encontrarás en este whitepaper?',
     bullets: [
       'Datos actualizados de ausentismo crónico en Chile',
