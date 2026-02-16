@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whitepaper Gratis: Cómo Reducir el Ausentismo Escolar con IA | Smart Student</title>
+    <meta name="description" content="Descarga gratis nuestro whitepaper con estrategias basadas en datos e inteligencia artificial para reducir el ausentismo crónico en tu colegio. Casos reales de Chile.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://smartstudent.io/whitepaper-absentismo">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Whitepaper: Reducir el Ausentismo Escolar con IA">
+    <meta property="og:description" content="Guía gratuita con estrategias respaldadas por datos para combatir el ausentismo crónico. Descárgala ahora.">
+    <meta property="og:image" content="https://smartstudent.io/img/whitepaper-og.jpg">
+    <meta property="og:url" content="https://smartstudent.io/whitepaper-absentismo">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#2563eb">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/img/logo3.1.ico?v=3">
+    <link rel="shortcut icon" href="/img/logo3.1.ico?v=3">
+
+    <!-- Fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Config -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#0f172a',
+                            neon: '#00dc82',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-12px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { font-feature-settings: "cv11", "ss01"; -webkit-font-smoothing: antialiased; }
+
+        .wp-gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+        }
+
+        .wp-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .wp-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .wp-input:focus {
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .wp-btn {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            transition: all 0.3s ease;
+        }
+        .wp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.4);
+        }
+        .wp-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .check-icon {
+            width: 20px; height: 20px;
+            background: linear-gradient(135deg, #2563eb, #00dc82);
+            border-radius: 50%;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+        .delay-1 { animation-delay: 0.1s; opacity: 0; }
+        .delay-2 { animation-delay: 0.2s; opacity: 0; }
+        .delay-3 { animation-delay: 0.3s; opacity: 0; }
+        .delay-4 { animation-delay: 0.4s; opacity: 0; }
+    </style>
+</head>
+<body class="wp-gradient-bg min-h-screen text-white font-sans relative overflow-x-hidden">
+
+    <!-- Background blobs -->
+    <div class="wp-blob w-[500px] h-[500px] bg-blue-600 top-[-100px] left-[-150px]" style="position:fixed;"></div>
+    <div class="wp-blob w-[400px] h-[400px] bg-emerald-500 bottom-[-100px] right-[-100px]" style="position:fixed;"></div>
+    <div class="wp-blob w-[300px] h-[300px] bg-indigo-600 top-[40%] right-[10%]" style="position:fixed;"></div>
+
+    <!-- Minimal header -->
+    <header class="relative z-10 py-6 px-6">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2 group">
+                <img src="/img/logo3.1.ico" alt="Smart Student" class="w-8 h-8">
+                <span class="text-lg font-bold text-white/90 group-hover:text-white transition-colors">Smart Student</span>
+            </a>
+            <a href="/" class="text-sm text-white/50 hover:text-white/80 transition-colors">
+                <i class="fas fa-arrow-left mr-1"></i> Volver al sitio
+            </a>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main class="relative z-10 px-6 pb-20">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[80vh]">
+
+                <!-- Left: Content -->
+                <div class="animate-fade-in-up">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/10 text-sm text-blue-300 mb-6">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Whitepaper gratuito · 2026</span>
+                    </div>
+
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-tight mb-6">
+                        Cómo reducir el
+                        <span class="bg-gradient-to-r from-blue-400 via-blue-300 to-emerald-400 bg-clip-text text-transparent">
+                            ausentismo escolar
+                        </span>
+                        con Inteligencia Artificial
+                    </h1>
+
+                    <p class="text-lg text-white/70 mb-8 max-w-lg leading-relaxed">
+                        Guía práctica con datos reales, estrategias de intervención temprana y 
+                        casos de éxito en colegios de Chile. Descárgala gratis.
+                    </p>
+
+                    <!-- Benefits list -->
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-3 animate-fade-in-up delay-1">
+                            <span class="check-icon mt-0.5">
+                                <i class="fas fa-check text-white text-[10px]"></i>
+                            </span>
+                            <span class="text-white/80">Estadísticas actualizadas de ausentismo crónico en Chile</span>
+                        </li>
+                        <li class="flex items-start gap-3 animate-fade-in-up delay-2">
+                            <span class="check-icon mt-0.5">
+                                <i class="fas fa-check text-white text-[10px]"></i>
+                            </span>
+                            <span class="text-white/80">Modelo predictivo: cómo la IA detecta alumnos en riesgo 3 meses antes</span>
+                        </li>
+                        <li class="flex items-start gap-3 animate-fade-in-up delay-3">
+                            <span class="check-icon mt-0.5">
+                                <i class="fas fa-check text-white text-[10px]"></i>
+                            </span>
+                            <span class="text-white/80">Protocolos de intervención paso a paso para equipos directivos</span>
+                        </li>
+                        <li class="flex items-start gap-3 animate-fade-in-up delay-4">
+                            <span class="check-icon mt-0.5">
+                                <i class="fas fa-check text-white text-[10px]"></i>
+                            </span>
+                            <span class="text-white/80">Caso de estudio: colegio que redujo la deserción un 23% en un semestre</span>
+                        </li>
+                    </ul>
+
+                    <!-- Social proof -->
+                    <div class="flex items-center gap-4 text-sm text-white/50">
+                        <div class="flex -space-x-2">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-xs font-bold border-2 border-brand-900">JC</div>
+                            <div class="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center text-xs font-bold border-2 border-brand-900">MA</div>
+                            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold border-2 border-brand-900">RL</div>
+                        </div>
+                        <span>+500 directivos ya lo descargaron</span>
+                    </div>
+                </div>
+
+                <!-- Right: Form Card -->
+                <div class="animate-fade-in-up delay-2">
+                    <div class="wp-card rounded-2xl p-8 sm:p-10 max-w-md mx-auto lg:mx-0 lg:ml-auto">
+                        <div class="text-center mb-8">
+                            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center">
+                                <i class="fas fa-file-arrow-down text-2xl text-white"></i>
+                            </div>
+                            <h2 class="text-2xl font-bold mb-2">Descarga tu copia gratis</h2>
+                            <p class="text-white/50 text-sm">Completa el formulario y recibirás el PDF en tu correo</p>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="whitepaper-form" class="space-y-4">
+                            <div>
+                                <label for="wp-name" class="block text-sm font-medium text-white/70 mb-1.5">Nombre completo</label>
+                                <input
+                                    type="text"
+                                    id="wp-name"
+                                    name="name"
+                                    required
+                                    placeholder="Ej: María González"
+                                    class="wp-input w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-blue-500 transition-all"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="wp-email" class="block text-sm font-medium text-white/70 mb-1.5">Correo electrónico</label>
+                                <input
+                                    type="email"
+                                    id="wp-email"
+                                    name="email"
+                                    required
+                                    placeholder="maria@colegio.cl"
+                                    class="wp-input w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-blue-500 transition-all"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="wp-institution" class="block text-sm font-medium text-white/70 mb-1.5">Colegio / Institución</label>
+                                <input
+                                    type="text"
+                                    id="wp-institution"
+                                    name="institution"
+                                    required
+                                    placeholder="Nombre del colegio"
+                                    class="wp-input w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-white/30 focus:outline-none focus:border-blue-500 transition-all"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="wp-role" class="block text-sm font-medium text-white/70 mb-1.5">Cargo</label>
+                                <select
+                                    id="wp-role"
+                                    name="role"
+                                    required
+                                    class="wp-input w-full px-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white focus:outline-none focus:border-blue-500 transition-all appearance-none"
+                                >
+                                    <option value="" disabled selected class="bg-gray-800">Selecciona tu cargo</option>
+                                    <option value="director" class="bg-gray-800">Director/a</option>
+                                    <option value="jefe_utp" class="bg-gray-800">Jefe/a UTP</option>
+                                    <option value="coordinador" class="bg-gray-800">Coordinador/a Académico</option>
+                                    <option value="sostenedor" class="bg-gray-800">Sostenedor/a</option>
+                                    <option value="docente" class="bg-gray-800">Docente</option>
+                                    <option value="otro" class="bg-gray-800">Otro</option>
+                                </select>
+                            </div>
+
+                            <button
+                                type="submit"
+                                id="wp-submit-btn"
+                                class="wp-btn w-full py-4 rounded-xl font-bold text-white text-lg mt-2 flex items-center justify-center gap-2"
+                            >
+                                <i class="fas fa-download"></i>
+                                <span>Descargar Whitepaper</span>
+                            </button>
+
+                            <p class="text-center text-xs text-white/30 mt-3">
+                                <i class="fas fa-lock mr-1"></i>
+                                Tus datos están seguros. No compartimos tu información con terceros.
+                            </p>
+                        </form>
+
+                        <!-- Success state (hidden by default) -->
+                        <div id="wp-success" class="hidden text-center py-6">
+                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-400 flex items-center justify-center">
+                                <i class="fas fa-check text-3xl text-white"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">¡Whitepaper enviado!</h3>
+                            <p class="text-white/60 mb-4">Revisa tu bandeja de entrada. El PDF llegará en los próximos minutos.</p>
+                            <p class="text-sm text-white/40">¿No lo ves? Revisa tu carpeta de spam.</p>
+                            <a href="/" class="inline-block mt-6 text-blue-400 hover:text-blue-300 text-sm font-medium transition-colors">
+                                <i class="fas fa-arrow-left mr-1"></i> Volver al sitio
+                            </a>
+                        </div>
+
+                        <!-- Error state (hidden by default) -->
+                        <div id="wp-error" class="hidden mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-300 text-sm text-center">
+                            <i class="fas fa-exclamation-triangle mr-1"></i>
+                            <span id="wp-error-msg">Hubo un error al enviar. Inténtalo de nuevo.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Minimal footer -->
+    <footer class="relative z-10 py-8 px-6 border-t border-white/5">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-white/30">
+            <span>&copy; 2026 Smart Student Inc. Todos los derechos reservados.</span>
+            <div class="flex items-center gap-4">
+                <a href="/" class="hover:text-white/60 transition-colors">Inicio</a>
+                <span class="text-white/10">|</span>
+                <a href="mailto:contacto@smartstudent.cl" class="hover:text-white/60 transition-colors">Contacto</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Form logic -->
+    <script>
+    (function() {
+        'use strict';
+
+        const form = document.getElementById('whitepaper-form');
+        const submitBtn = document.getElementById('wp-submit-btn');
+        const successDiv = document.getElementById('wp-success');
+        const errorDiv = document.getElementById('wp-error');
+        const errorMsg = document.getElementById('wp-error-msg');
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Reset states
+            errorDiv.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Enviando...</span>';
+
+            const data = {
+                name: document.getElementById('wp-name').value.trim(),
+                email: document.getElementById('wp-email').value.trim(),
+                institution: document.getElementById('wp-institution').value.trim(),
+                role: document.getElementById('wp-role').value
+            };
+
+            // Basic validation
+            if (!data.name || !data.email || !data.institution || !data.role) {
+                showError('Por favor completa todos los campos.');
+                resetBtn();
+                return;
+            }
+
+            if (!/^\S+@\S+\.\S+$/.test(data.email)) {
+                showError('Ingresa un correo electrónico válido.');
+                resetBtn();
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/send-whitepaper', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.ok) {
+                    // Success: hide form, show success message
+                    form.classList.add('hidden');
+                    successDiv.classList.remove('hidden');
+                } else {
+                    showError(result.error || 'Error al procesar la solicitud. Inténtalo de nuevo.');
+                    resetBtn();
+                }
+            } catch (err) {
+                showError('Error de conexión. Verifica tu internet e inténtalo de nuevo.');
+                resetBtn();
+            }
+        });
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function resetBtn() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-download"></i> <span>Descargar Whitepaper</span>';
+        }
+    })();
+    </script>
+</body>
+</html>
