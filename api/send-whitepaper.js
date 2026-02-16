@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   if (!name || !email || !institution || !role) {
     return res.status(400).json({ error: 'Todos los campos son obligatorios.' });
   }
-  if (!/^\S+@\S+\.\S+$/.test(email)) {
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
     return res.status(400).json({ error: 'Correo electrónico inválido.' });
   }
 

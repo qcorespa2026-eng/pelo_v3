@@ -291,31 +291,34 @@
                         </div>
 
                         <!-- Form -->
-                        <form id="whitepaper-form" class="space-y-4">
+                        <form id="whitepaper-form" class="space-y-4" novalidate>
                             <div>
                                 <label for="wp-name" class="block text-sm font-medium wp-label mb-1.5" data-i18n="form.label_name">Nombre completo</label>
-                                <input type="text" id="wp-name" name="name" required
+                                <input type="text" id="wp-name" name="name"
                                     data-i18n-placeholder="form.ph_name"
                                     placeholder="Ej: María González"
                                     class="wp-input w-full px-4 py-3 rounded-xl focus:outline-none transition-all">
+                                <p id="err-name" class="hidden text-xs text-red-400 mt-1" data-i18n="form.err_name">Este campo es obligatorio.</p>
                             </div>
                             <div>
                                 <label for="wp-email" class="block text-sm font-medium wp-label mb-1.5" data-i18n="form.label_email">Correo electrónico</label>
-                                <input type="email" id="wp-email" name="email" required
+                                <input type="email" id="wp-email" name="email"
                                     data-i18n-placeholder="form.ph_email"
                                     placeholder="maria@colegio.cl"
                                     class="wp-input w-full px-4 py-3 rounded-xl focus:outline-none transition-all">
+                                <p id="err-email" class="hidden text-xs text-red-400 mt-1" data-i18n="form.err_email">Ingresa un correo válido (ej: nombre@dominio.cl).</p>
                             </div>
                             <div>
                                 <label for="wp-institution" class="block text-sm font-medium wp-label mb-1.5" data-i18n="form.label_institution">Colegio / Institución</label>
-                                <input type="text" id="wp-institution" name="institution" required
+                                <input type="text" id="wp-institution" name="institution"
                                     data-i18n-placeholder="form.ph_institution"
                                     placeholder="Nombre del colegio"
                                     class="wp-input w-full px-4 py-3 rounded-xl focus:outline-none transition-all">
+                                <p id="err-institution" class="hidden text-xs text-red-400 mt-1" data-i18n="form.err_institution">Este campo es obligatorio.</p>
                             </div>
                             <div>
                                 <label for="wp-role" class="block text-sm font-medium wp-label mb-1.5" data-i18n="form.label_role">Cargo</label>
-                                <select id="wp-role" name="role" required
+                                <select id="wp-role" name="role"
                                     class="wp-input w-full px-4 py-3 rounded-xl focus:outline-none transition-all appearance-none">
                                     <option value="" disabled selected data-i18n="form.opt_select">Selecciona tu cargo</option>
                                     <option value="director" data-i18n="form.opt_director">Director/a</option>
@@ -325,6 +328,7 @@
                                     <option value="docente" data-i18n="form.opt_teacher">Docente</option>
                                     <option value="otro" data-i18n="form.opt_other">Otro</option>
                                 </select>
+                                <p id="err-role" class="hidden text-xs text-red-400 mt-1" data-i18n="form.err_role">Selecciona un cargo.</p>
                             </div>
 
                             <button type="submit" id="wp-submit-btn"
@@ -426,6 +430,10 @@
                 'form.error_fields': 'Por favor completa todos los campos.',
                 'form.error_email': 'Ingresa un correo electrónico válido.',
                 'form.error_connection': 'Error de conexión. Verifica tu internet e inténtalo de nuevo.',
+                'form.err_name': 'Este campo es obligatorio.',
+                'form.err_email': 'Ingresa un correo válido (ej: nombre@dominio.cl).',
+                'form.err_institution': 'Este campo es obligatorio.',
+                'form.err_role': 'Selecciona un cargo.',
             },
             en: {
                 'header.brand': 'Smart Student',
@@ -469,6 +477,10 @@
                 'form.error_fields': 'Please fill in all fields.',
                 'form.error_email': 'Enter a valid email address.',
                 'form.error_connection': 'Connection error. Check your internet and try again.',
+                'form.err_name': 'This field is required.',
+                'form.err_email': 'Enter a valid email (e.g. name@domain.com).',
+                'form.err_institution': 'This field is required.',
+                'form.err_role': 'Please select a position.',
             }
         };
 
@@ -548,12 +560,46 @@
             var errorDiv = document.getElementById('wp-error');
             var errorMsg = document.getElementById('wp-error-msg');
 
+            // Inline validation helpers
+            var fieldIds = ['wp-name', 'wp-email', 'wp-institution', 'wp-role'];
+            var errIds = ['err-name', 'err-email', 'err-institution', 'err-role'];
+            var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+            function clearFieldErrors() {
+                errIds.forEach(function(id) {
+                    document.getElementById(id).classList.add('hidden');
+                });
+                fieldIds.forEach(function(id) {
+                    var el = document.getElementById(id);
+                    el.classList.remove('ring-2', 'ring-red-500/50');
+                });
+            }
+
+            function showFieldError(fieldId, errId) {
+                var field = document.getElementById(fieldId);
+                var err = document.getElementById(errId);
+                field.classList.add('ring-2', 'ring-red-500/50');
+                err.classList.remove('hidden');
+            }
+
+            // Clear error on input
+            fieldIds.forEach(function(id, i) {
+                var el = document.getElementById(id);
+                el.addEventListener('input', function() {
+                    el.classList.remove('ring-2', 'ring-red-500/50');
+                    document.getElementById(errIds[i]).classList.add('hidden');
+                });
+                el.addEventListener('change', function() {
+                    el.classList.remove('ring-2', 'ring-red-500/50');
+                    document.getElementById(errIds[i]).classList.add('hidden');
+                });
+            });
+
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 errorDiv.classList.add('hidden');
-                submitBtn.disabled = true;
+                clearFieldErrors();
                 var dict = T[currentLang] || T['es'];
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>' + dict['form.sending'] + '</span>';
 
                 var data = {
                     name: document.getElementById('wp-name').value.trim(),
@@ -563,16 +609,17 @@
                     lang: currentLang
                 };
 
-                if (!data.name || !data.email || !data.institution || !data.role) {
-                    showError(dict['form.error_fields']);
-                    resetBtn();
-                    return;
-                }
-                if (!/^\S+@\S+\.\S+$/.test(data.email)) {
-                    showError(dict['form.error_email']);
-                    resetBtn();
-                    return;
-                }
+                // Field-by-field validation
+                var hasError = false;
+                if (!data.name) { showFieldError('wp-name', 'err-name'); hasError = true; }
+                if (!data.email || !emailRegex.test(data.email)) { showFieldError('wp-email', 'err-email'); hasError = true; }
+                if (!data.institution) { showFieldError('wp-institution', 'err-institution'); hasError = true; }
+                if (!data.role) { showFieldError('wp-role', 'err-role'); hasError = true; }
+
+                if (hasError) return;
+
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>' + dict['form.sending'] + '</span>';
 
                 try {
                     var response = await fetch('/api/send-whitepaper', {
