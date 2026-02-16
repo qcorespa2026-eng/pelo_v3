@@ -214,7 +214,7 @@
                     <i id="theme-icon" class="fa-solid fa-sun text-sm" style="color:#fcd34d;"></i>
                 </button>
                 <!-- Language toggle -->
-                <button id="lang-toggle" class="wp-ctrl-btn inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold transition" aria-label="Toggle language">EN</button>
+                <button id="lang-toggle" class="wp-ctrl-btn inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold transition" aria-label="Toggle language">ES</button>
                 <!-- Back link -->
                 <a href="/" class="wp-header-link text-sm transition-colors ml-2 hidden sm:inline-flex items-center gap-1">
                     <i class="fas fa-arrow-left mr-1"></i> <span data-i18n="header.back">Volver al sitio</span>
@@ -488,9 +488,9 @@
             document.documentElement.lang = lang;
             localStorage.setItem('wp-lang', lang);
 
-            // Update lang toggle button text (show the OTHER language as option)
+            // Update lang toggle button text (show the CURRENT language)
             var langBtn = document.getElementById('lang-toggle');
-            if (langBtn) langBtn.textContent = lang === 'es' ? 'EN' : 'ES';
+            if (langBtn) langBtn.textContent = lang === 'es' ? 'ES' : 'EN';
         }
 
         /* ==================
